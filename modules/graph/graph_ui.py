@@ -62,28 +62,34 @@ def render():
     Dijkstra · Kruskal · Prim — with manual or image input.</p>
     """, unsafe_allow_html=True)
 
-    with st.sidebar:
-        st.markdown("### ⚙️ Graph Input")
-        input_method = st.radio("Input Method", ["✏️ Manual edges", "🖼️ Upload image"])
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
+    """, unsafe_allow_html=True)
+    
+    col_a, col_b = st.columns([1, 2])
+    input_method = col_a.radio("Input Method", ["✏️ Manual edges", "🖼️ Upload image"])
 
-        if input_method == "✏️ Manual edges":
-            raw_edges = st.text_area("Edges (u,v,weight per line)", DEFAULT_EDGES_STR, height=200)
-            nodes, edges = _parse_edges(raw_edges)
+    if input_method == "✏️ Manual edges":
+        raw_edges = col_b.text_area("Edges (u,v,weight per line)", DEFAULT_EDGES_STR, height=135)
+        nodes, edges = _parse_edges(raw_edges)
+    else:
+        uploaded = col_b.file_uploader("Upload graph image", type=["png","jpg","jpeg"])
+        if uploaded:
+            result = parse_graph_from_image(uploaded.read())
+            col_b.info(result["message"])
+            raw_fallback = col_b.text_area("Define edges manually below:", DEFAULT_EDGES_STR, height=100)
+            nodes, edges = _parse_edges(raw_fallback)
         else:
-            uploaded = st.file_uploader("Upload graph image", type=["png","jpg","jpeg"])
-            if uploaded:
-                result = parse_graph_from_image(uploaded.read())
-                st.info(result["message"])
-                raw_fallback = st.text_area("Define edges manually below:", DEFAULT_EDGES_STR, height=180)
-                nodes, edges = _parse_edges(raw_fallback)
-            else:
-                st.info("Upload an image or use Manual mode.")
-                nodes, edges = _parse_edges(DEFAULT_EDGES_STR)
+            col_b.info("Upload an image or use Manual mode.")
+            nodes, edges = _parse_edges(DEFAULT_EDGES_STR)
 
-        source_node = st.text_input("Source node (Dijkstra)", nodes[0] if nodes else "A")
-        target_node = st.text_input("Target node (Dijkstra)", nodes[-1] if nodes else "F")
-        algorithm   = st.selectbox("Highlight algorithm", ["Dijkstra", "Kruskal", "Prim"])
-        explain_mode = st.toggle("📖 Explain Mode", value=True)
+    c1, c2, c3, c4 = st.columns(4)
+    source_node = c1.text_input("Source node (Dijkstra)", nodes[0] if nodes else "A")
+    target_node = c2.text_input("Target node (Dijkstra)", nodes[-1] if nodes else "F")
+    algorithm   = c3.selectbox("Highlight algorithm", ["Dijkstra", "Kruskal", "Prim"])
+    explain_mode = c4.toggle("📖 Explain Mode", value=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     if not nodes or not edges:
         st.warning("No valid edges found. Add edges in the format `u,v,weight`.")

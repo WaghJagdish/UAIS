@@ -25,21 +25,27 @@ def render():
     Compare Linear Search and Binary Search with pointer animations.</p>
     """, unsafe_allow_html=True)
 
-    with st.sidebar:
-        st.markdown("### ⚙️ Controls")
-        input_mode = st.radio("Array input", ["Random", "Custom"])
-        if input_mode == "Random":
-            n    = st.slider("Array size", 5, 25, 12)
-            arr  = sorted(random.Random(42).sample(range(1, 200), n))
-        else:
-            raw  = st.text_input("Comma-separated integers", "10,23,34,45,56,67,78,89,90")
-            try:
-                arr = [int(x.strip()) for x in raw.split(",") if x.strip()]
-            except ValueError:
-                st.error("Invalid input.")
-                return
-        target  = st.number_input("🎯 Target value", value=arr[len(arr)//2] if arr else 45)
-        explain_mode = st.toggle("📖 Explain Mode", value=True)
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
+    """, unsafe_allow_html=True)
+    
+    col_a, col_b, col_c = st.columns(3)
+    input_mode = col_a.radio("Array input", ["Random", "Custom"], horizontal=True)
+    if input_mode == "Random":
+        n    = col_b.slider("Array size", 5, 25, 12)
+        arr  = sorted(random.Random(42).sample(range(1, 200), n))
+    else:
+        raw  = col_b.text_input("Comma-separated ints", "10,23,34,45,56")
+        try:
+            arr = [int(x.strip()) for x in raw.split(",") if x.strip()]
+        except ValueError:
+            st.error("Invalid input.")
+            return
+
+    target = col_c.number_input("🎯 Target value", value=arr[len(arr)//2] if arr else 45)
+    explain_mode = col_a.toggle("📖 Explain Mode", value=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     if not arr:
         st.warning("Array is empty.")
@@ -129,6 +135,14 @@ def render():
             
             t_map   = {k: v["elapsed"] for k, v in timings.items()}
             op_map  = {k: v["result"]["comparisons"] for k, v in timings.items()}
+            
+            st.session_state["search_bench_results"] = {
+                "timings": timings, "t_map": t_map, "op_map": op_map, "comp_arr": comp_arr
+            }
+
+        if "search_bench_results" in st.session_state:
+            res = st.session_state["search_bench_results"]
+            timings, t_map, op_map, comp_arr = res["timings"], res["t_map"], res["op_map"], res["comp_arr"]
 
             c1, c2 = st.columns(2)
             c1.plotly_chart(timing_bar_chart(t_map, "⏱️ Execution Time"), use_container_width=True)
@@ -136,12 +150,12 @@ def render():
 
             rows = []
             for name in ("Linear Search", "Binary Search"):
-                res = timings[name]["result"]
+                r = timings[name]["result"]
                 rows.append({
                     "Algorithm": name,
                     "Time (ms)": f"{timings[name]['elapsed']*1000:.4f}",
-                    "Comparisons": res["comparisons"],
-                    "Found at": res["found_at"] if res["found_at"] >= 0 else "Not found",
+                    "Comparisons": r["comparisons"],
+                    "Found at": r["found_at"] if r["found_at"] >= 0 else "Not found",
                 })
             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 

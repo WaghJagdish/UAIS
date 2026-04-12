@@ -119,8 +119,9 @@ def rabin_karp_search(text: str, pattern: str, base: int = 256, mod: int = 101) 
             "window_start": i, "char_pos": 0,
             "match": actual_match, "matches": matches[:],
             "description": (
-                f"Window [{i}:{i+m}]: hash={'match ✅' if hash_match else 'miss ❌'}"
-                + (f" → string confirm {'✅' if actual_match else '❌ (spurious hit)'}" if hash_match else "")
+                f"Window [{i}:{i+m}] ('{text[i:i+m]}'): Hash(Text)={t_hash}, Hash(Pattern)={p_hash} → "
+                f"{'Match ✅' if hash_match else 'Miss ❌'}"
+                + (f" → String confirm {'✅' if actual_match else '❌ (Collision)'}" if hash_match else "")
             ),
         })
         if actual_match:

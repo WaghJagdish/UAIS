@@ -33,25 +33,32 @@ def render():
     Compare Selection, Insertion, Merge, and Quick Sort side-by-side.</p>
     """, unsafe_allow_html=True)
 
-    # ── Sidebar controls ──────────────────────────────────────────────────────
-    with st.sidebar:
-        st.markdown("### ⚙️ Controls")
-        algo_choice = st.selectbox("Algorithm to visualize", list(ALGO_MAP.keys()))
-        input_mode  = st.radio("Input mode", ["Random", "Custom"])
-        if input_mode == "Random":
-            n = st.slider("Array size", 5, 30, 12)
-            seed = st.number_input("Random seed", value=42)
-            arr  = random.Random(int(seed)).sample(range(1, 101), n)
-        else:
-            raw = st.text_input("Enter comma-separated integers", "38,27,43,3,9,82,10")
-            try:
-                arr = [int(x.strip()) for x in raw.split(",") if x.strip()]
-            except ValueError:
-                st.error("Invalid input. Use integers separated by commas.")
-                return
-        explain_mode = st.toggle("📖 Explain Mode", value=True)
-        st.markdown("---")
-        st.markdown(build_legend(), unsafe_allow_html=True)
+    # ── Top-level controls ────────────────────────────────────────────────────
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
+    """, unsafe_allow_html=True)
+    
+    col_a, col_b, col_c = st.columns(3)
+    algo_choice = col_a.selectbox("Algorithm to visualize", list(ALGO_MAP.keys()))
+    input_mode  = col_b.radio("Input mode", ["Random", "Custom"], horizontal=True)
+    
+    if input_mode == "Random":
+        n = col_c.slider("Array size", 5, 30, 12)
+        seed = col_b.number_input("Random seed", value=42)
+        arr  = random.Random(int(seed)).sample(range(1, 101), n)
+    else:
+        raw = col_c.text_input("Enter comma-separated ints", "38,27,43,3,9")
+        try:
+            arr = [int(x.strip()) for x in raw.split(",") if x.strip()]
+        except ValueError:
+            st.error("Invalid input. Use integers separated by commas.")
+            return
+
+    explain_mode = col_a.toggle("📖 Explain Mode", value=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown(build_legend(), unsafe_allow_html=True)
 
     if not arr:
         st.warning("Please provide a valid array.")
@@ -110,12 +117,22 @@ def render():
         
         if st.button("🚀 Run Performance Comparison", type="primary", key="run_sort_comp"):
             comp_arr = random.Random(int(comp_seed)).sample(range(1, comp_n * 10), int(comp_n))
-            
             with st.spinner(f"Running benchmarks on {comp_n} elements..."):
                 timings = measure_multiple(ALGO_MAP, comp_arr)
 
             t_map  = {k: v["elapsed"] for k, v in timings.items()}
             op_map = {k: v["result"]["comparisons"] for k, v in timings.items()}
+            
+            st.session_state["sort_bench_results"] = {
+                "timings": timings,
+                "t_map": t_map,
+                "op_map": op_map,
+                "comp_arr": comp_arr
+            }
+
+        if "sort_bench_results" in st.session_state:
+            res = st.session_state["sort_bench_results"]
+            t_map, op_map, timings, comp_arr = res["t_map"], res["op_map"], res["timings"], res["comp_arr"]
 
             c1, c2 = st.columns(2)
             c1.plotly_chart(timing_bar_chart(t_map, "⏱️ Execution Time"), use_container_width=True)
@@ -123,12 +140,12 @@ def render():
 
             # Results table
             rows = []
-            for name, res in timings.items():
+            for name, r in timings.items():
                 rows.append({
                     "Algorithm": name,
-                    "Time (ms)": f"{res['elapsed']*1000:.4f}",
-                    "Comparisons": res["result"]["comparisons"],
-                    "Swaps": res["result"].get("swaps", 0),
+                    "Time (ms)": f"{r['elapsed']*1000:.4f}",
+                    "Comparisons": r["result"]["comparisons"],
+                    "Swaps": r["result"].get("swaps", 0),
                 })
             df = pd.DataFrame(rows)
             st.dataframe(df, use_container_width=True, hide_index=True)

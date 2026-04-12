@@ -31,16 +31,21 @@ def render():
     Exact vs Approximate frequency estimation in data streams.</p>
     """, unsafe_allow_html=True)
 
-    with st.sidebar:
-        st.markdown("### ⚙️ Controls")
-        stream_preset = st.selectbox("Sample stream", list(_SAMPLE_STREAMS.keys()))
-        stream = _SAMPLE_STREAMS[stream_preset]
-        st.markdown(f"**Stream length:** {len(stream)}")
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
+    """, unsafe_allow_html=True)
+    
+    col_a, col_b, col_c = st.columns(3)
+    stream_preset = col_a.selectbox("Sample stream", list(_SAMPLE_STREAMS.keys()))
+    stream = _SAMPLE_STREAMS[stream_preset]
+    col_a.markdown(f"**Stream length:** {len(stream)}")
 
-        sample_k = st.slider("Reservoir size (k)", 2, min(20, len(stream)), 5)
-        cms_width = st.slider("CMS width (w)", 5, 50, 20)
-        cms_depth = st.slider("CMS depth (d)", 2, 6, 3)
-        explain_mode = st.toggle("📖 Explain Mode", value=True)
+    sample_k = col_b.slider("Reservoir size (k)", 2, min(20, len(stream)), 5)
+    cms_width = col_c.slider("CMS width (w)", 5, 50, 20)
+    cms_depth = col_c.slider("CMS depth (d)", 2, 6, 3)
+    explain_mode = col_b.toggle("📖 Explain Mode", value=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown(f"**Stream preview:** `{stream[:20]}{'...' if len(stream)>20 else ''}`")
     st.divider()
@@ -127,8 +132,17 @@ def render():
                 bench_cms = count_min_sketch_stream(comp_stream, width=50, depth=5)
                 time_cms = time.perf_counter() - start_cms
 
-            exact_f  = bench_exact["frequencies"]
-            approx_f = bench_cms["approx_frequencies"]
+            st.session_state["stream_bench_results"] = {
+                "exact_f": bench_exact["frequencies"],
+                "approx_f": bench_cms["approx_frequencies"],
+                "time_exact": time_exact,
+                "time_cms": time_cms
+            }
+
+        if "stream_bench_results" in st.session_state:
+            res = st.session_state["stream_bench_results"]
+            exact_f, approx_f = res["exact_f"], res["approx_f"]
+            time_exact, time_cms = res["time_exact"], res["time_cms"]
             
             # Align keys
             all_keys = set(str(k) for k in exact_f) | set(str(k) for k in approx_f)

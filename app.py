@@ -11,7 +11,7 @@ st.set_page_config(
     page_title="UAIS — Unified Algorithm Intelligence System",
     page_icon="🧠",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 # ── Global CSS injection ───────────────────────────────────────────────────────
@@ -147,31 +147,34 @@ def _home():
 
     cards = [
         ("🔀", "Sorting", "Selection · Insertion · Merge · Quick Sort",
-         "Step-by-step bar animations, timing comparison, best-algorithm recommendation", "#667eea"),
+         "Step-by-step bar animations, timing comparison, best-algorithm recommendation", "sorting", "#667eea"),
         ("🔍", "Searching", "Linear · Binary Search",
-         "Pointer visualization, sorted/unsorted comparison, comparison count", "#11998e"),
+         "Pointer visualization, sorted/unsorted comparison, comparison count", "searching", "#11998e"),
         ("🧩", "Paradigms", "Knapsack · Shortest Path · TSP",
-         "Greedy vs DP vs Branch & Bound with DP table and decision tree", "#4facfe"),
+         "Greedy vs DP vs Branch & Bound with DP table and decision tree", "paradigms", "#4facfe"),
         ("📝", "String Matching", "Naive · KMP · Rabin-Karp · Boyer-Moore",
-         "Pattern sliding animation, LPS table, bad-character heuristic display", "#f093fb"),
+         "Pattern sliding animation, LPS table, bad-character heuristic display", "strings", "#f093fb"),
         ("🕸️", "Graph Algorithms", "Dijkstra · Kruskal · Prim",
-         "NetworkX graph with highlighted MST/path edges, image upload support", "#a18cd1"),
+         "NetworkX graph with highlighted MST/path edges, image upload support", "graph", "#a18cd1"),
         ("📡", "Streaming", "Exact Count · Reservoir · Count-Min Sketch",
-         "Real-time frequency chart, exact vs approximate comparison", "#fddb92"),
+         "Real-time frequency chart, exact vs approximate comparison", "streaming", "#fddb92"),
     ]
 
     cols = st.columns(3)
-    for i, (icon, title, algos, desc, color) in enumerate(cards):
+    for i, (icon, title, algos, desc, page_key, color) in enumerate(cards):
         with cols[i % 3]:
             st.markdown(f"""
-            <div style='background:#1A1F2E;border-radius:14px;padding:20px;margin-bottom:16px;
-                        border:1px solid #2C3E50;border-top:3px solid {color};'>
+            <div style='background:rgba(26,31,46,0.6);border-radius:14px;padding:20px;margin-bottom:8px;
+                        border:1px solid rgba(255,255,255,0.05);border-top:3px solid {color}; backdrop-filter:blur(10px);'>
                 <div style='font-size:2rem;margin-bottom:8px;'>{icon}</div>
                 <div style='font-weight:700;font-size:1.1rem;color:#ECF0F1;margin-bottom:4px;'>{title}</div>
                 <div style='font-size:0.82rem;color:{color};margin-bottom:8px;font-weight:500;'>{algos}</div>
                 <div style='font-size:0.8rem;color:#7F8C8D;'>{desc}</div>
             </div>
             """, unsafe_allow_html=True)
+            if st.button(f"Explore {title} ➔", key=f"nav_{page_key}", use_container_width=True):
+                st.session_state.current_page = page_key
+                st.rerun()
 
     st.divider()
 
@@ -183,64 +186,31 @@ def _home():
 
     st.markdown("""
     <div style='background:linear-gradient(135deg,#1A1F2E,#0d1117);border-radius:14px;
-                padding:20px;border:1px solid #2C3E50;margin-top:1rem;'>
+                padding:20px;border:1px solid rgba(255,255,255,0.08);margin-top:1rem;'>
         <h3 style='color:#ECF0F1;margin:0 0 12px;'>⚡ Key Features</h3>
         <ul style='color:#95A5A6;margin:0;padding-left:20px;line-height:2;'>
             <li>🎬 <b>Step-by-step visualizations</b> with auto-play and configurable speed</li>
             <li>📖 <b>Explain Mode</b> — natural language description of every algorithm step</li>
             <li>📊 <b>Side-by-side comparison</b> of execution time, space, and operations</li>
             <li>🏆 <b>Dynamic recommendations</b> — best algorithm for your specific input</li>
-            <li>🎨 <b>Color-coded animations</b> — 🔴 Compare · 🟡 Active · 🟢 Sorted/Found</li>
-            <li>📐 <b>Complexity tables</b> — best / average / worst case + space</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div style='text-align:center;padding:1.5rem;color:#566573;font-size:0.85rem;'>
-        👈 Use the sidebar to navigate between algorithm modules.
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ── Sidebar navigation ─────────────────────────────────────────────────────────
-PAGES = {
-    "🏠 Home":              "home",
-    "🔀 Sorting":           "sorting",
-    "🔍 Searching":         "searching",
-    "🧩 Paradigms":         "paradigms",
-    "📝 String Matching":   "strings",
-    "🕸️ Graph Algorithms":  "graph",
-    "📡 Streaming":         "streaming",
-}
-
-with st.sidebar:
-    st.markdown("""
-    <div style='text-align:center;padding:12px 0 20px;'>
-        <div style='font-size:2.2rem;'>🧠</div>
-        <div style='font-weight:700;font-size:1.1rem;color:#ECF0F1;letter-spacing:0.5px;'>UAIS</div>
-        <div style='font-size:0.7rem;color:#7F8C8D;'>Unified Algorithm Intelligence System</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    selected = st.radio(
-        "Navigate",
-        list(PAGES.keys()),
-        label_visibility="collapsed",
-    )
-    page_key = PAGES[selected]
-
-    st.markdown("---")
-    st.markdown("""
-    <div style='font-size:0.72rem;color:#566573;text-align:center;padding-top:8px;'>
-        DAA Mini-Project &middot; Python + Streamlit<br>
-        Algorithms &middot; Visualization &middot; Analysis
-    </div>
-    """, unsafe_allow_html=True)
-
 # ── Page routing ───────────────────────────────────────────────────────────────
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "home"
+
+page_key = st.session_state.current_page
+
+# Global Top Nav for modules
+if page_key != "home":
+    col1, col2 = st.columns([8, 2])
+    with col2:
+        if st.button("🏠 Back to Home", use_container_width=True):
+            st.session_state.current_page = "home"
+            st.rerun()
+
 if page_key == "home":
     _home()
 elif page_key == "sorting":

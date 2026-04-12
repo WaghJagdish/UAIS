@@ -22,15 +22,25 @@ from utils.timer import timer_context
 def _knapsack_ui():
     st.markdown("### 📦 0/1 Knapsack Problem")
 
-    with st.sidebar:
-        st.markdown("#### Knapsack Inputs")
-        capacity = st.slider("Bag capacity", 5, 100, 50)
-        n_items  = st.slider("Number of items", 2, 10, 5)
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Knapsack Inputs</h4>
+    """, unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    capacity = c1.slider("Bag capacity", 5, 100, 50)
+    n_items  = c2.slider("Number of items", 2, 10, 5)
+    explain_mode = c3.toggle("📖 Explain Mode", value=True)
 
-        st.markdown("**Item values:**")
-        values  = [st.number_input(f"Value {i+1}", 1, 200, [10,40,30,50,35,25,15,45,20,60][i], key=f"v{i}") for i in range(n_items)]
-        weights = [st.number_input(f"Weight {i+1}", 1, 50,  [5, 4, 6, 3, 7, 8, 2, 9, 4, 6][i], key=f"w{i}") for i in range(n_items)]
-        explain_mode = st.toggle("📖 Explain Mode", value=True)
+    st.markdown("**Item values & weights:**")
+    cols = st.columns(min(n_items, 5))
+    values, weights = [], []
+    for i in range(n_items):
+        with cols[i % 5]:
+            v = st.number_input(f"Val {i+1}", 1, 200, [10,40,30,50,35,25,15,45,20,60][i], key=f"v{i}")
+            w = st.number_input(f"Wt {i+1}", 1, 50,  [5, 4, 6, 3, 7, 8, 2, 9, 4, 6][i], key=f"w{i}")
+            values.append(v)
+            weights.append(w)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown(f"**Capacity:** `{capacity}` | **Items:** {n_items}")
     col_v, col_w = st.columns(2)
@@ -41,11 +51,11 @@ def _knapsack_ui():
     # Run all three
     with st.spinner("Computing..."):
         with timer_context() as t_dp:
-            res_dp  = knapsack_dp(values, weights, capacity)
+            res_dp  = knapsack_dp(weights, values, capacity)
         with timer_context() as t_gr:
-            res_gr  = knapsack_greedy(values, weights, capacity)
+            res_gr  = knapsack_greedy(weights, values, capacity)
         with timer_context() as t_bb:
-            res_bb  = knapsack_branch_bound(values, weights, capacity)
+            res_bb  = knapsack_branch_bound(weights, values, capacity)
 
     timings = {"DP": t_dp["elapsed"], "Greedy": t_gr["elapsed"], "Branch & Bound": t_bb["elapsed"]}
     values_found = {"DP": res_dp["max_value"], "Greedy": res_gr["max_value"], "Branch & Bound": res_bb["max_value"]}
@@ -99,15 +109,20 @@ def _shortest_path_ui():
     ]
     DEFAULT_NODES = ["A","B","C","D","E","F"]
 
-    with st.sidebar:
-        st.markdown("#### Graph Input")
-        raw_edges = st.text_area(
-            "Edges (u,v,weight per line)",
-            "\n".join(f"{u},{v},{w}" for u,v,w in DEFAULT_EDGES),
-        )
-        source = st.text_input("Source node", "A")
-        target = st.text_input("Target node", "F")
-        explain_mode = st.toggle("📖 Explain Mode", value=True, key="sp_exp")
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Graph Input</h4>
+    """, unsafe_allow_html=True)
+    c1, c2, c3 = st.columns([2, 1, 1])
+    raw_edges = c1.text_area(
+        "Edges (u,v,weight per line)",
+        "\n".join(f"{u},{v},{w}" for u,v,w in DEFAULT_EDGES),
+        height=100
+    )
+    source = c2.text_input("Source node", "A")
+    target = c2.text_input("Target node", "F")
+    explain_mode = c3.toggle("📖 Explain Mode", value=True, key="sp_exp")
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Parse edges
     nodes, edges, graph_dict = [], [], {}
@@ -145,11 +160,14 @@ def _shortest_path_ui():
 
         rows = [
             {"Algorithm": "Dijkstra", "Distance": dijk["distance"], "Path": " → ".join(dijk["path"]),
-             "Complexity": "O((V+E) log V)", "Steps": len(dijk["steps"])},
+             "Complexity": "O((V+E) log V)", "Time (ms)": f"{dijk['elapsed']*1000:.4f}", "Steps": len(dijk["steps"])},
             {"Algorithm": "Floyd-Warshall", "Distance": fw["distance"], "Path": "(all pairs)",
-             "Complexity": "O(V³)", "Steps": len(fw["steps"])},
+             "Complexity": "O(V³)", "Time (ms)": f"{fw['elapsed']*1000:.4f}", "Steps": len(fw["steps"])},
         ]
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+        timings_sp = {"Dijkstra": dijk["elapsed"], "Floyd-Warshall": fw["elapsed"]}
+        st.plotly_chart(timing_bar_chart(timings_sp, "⏱️ Runtime Comparison"), use_container_width=True)
 
         if explain_mode and dijk["steps"]:
             st.markdown("**Dijkstra Steps (first 15):**")
@@ -187,17 +205,24 @@ def _tsp_ui():
     ]
     DEFAULT_NAMES = ["A","B","C","D"]
 
-    with st.sidebar:
-        st.markdown("#### TSP Inputs")
-        n_cities = st.slider("Number of cities", 3, 7, 4)
-        city_names = [st.text_input(f"City {i+1} name", DEFAULT_NAMES[i] if i < len(DEFAULT_NAMES) else f"C{i+1}", key=f"cn{i}") for i in range(n_cities)]
-        st.markdown("**Distance matrix (row-by-row, comma-separated):**")
-        raw_matrix = st.text_area(
-            "Distance matrix",
-            "\n".join(",".join(str(DEFAULT_MATRIX[i][j]) if i < 4 and j < 4 else "0" for j in range(n_cities)) for i in range(n_cities)),
-            height=120,
-        )
-        explain_mode = st.toggle("📖 Explain Mode", value=True, key="tsp_exp")
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ TSP Inputs</h4>
+    """, unsafe_allow_html=True)
+    c1, c2 = st.columns([1, 2])
+    n_cities = c1.slider("Number of cities", 3, 7, 4)
+    explain_mode = c1.toggle("📖 Explain Mode", value=True, key="tsp_exp")
+    
+    Cols = c2.columns(n_cities)
+    city_names = [Cols[i].text_input(f"City {i+1}", DEFAULT_NAMES[i] if i < len(DEFAULT_NAMES) else f"C{i+1}", key=f"cn{i}") for i in range(n_cities)]
+    
+    st.markdown("**Distance matrix (row-by-row, comma-separated):**")
+    raw_matrix = st.text_area(
+        "Distance matrix",
+        "\n".join(",".join(str(DEFAULT_MATRIX[i][j]) if i < 4 and j < 4 else "0" for j in range(n_cities)) for i in range(n_cities)),
+        height=100, label_visibility="collapsed"
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Parse matrix
     try:

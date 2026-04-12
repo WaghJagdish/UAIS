@@ -33,12 +33,17 @@ def render():
     Pattern sliding animations for Naive, KMP, Rabin-Karp, and Boyer-Moore.</p>
     """, unsafe_allow_html=True)
 
-    with st.sidebar:
-        st.markdown("### ⚙️ Controls")
-        text    = st.text_input("Text", "AABAACAADAABAABA")
-        pattern = st.text_input("Pattern", "AABA")
-        algo    = st.selectbox("Algorithm", list(ALGO_MAP.keys()))
-        explain_mode = st.toggle("📖 Explain Mode", value=True)
+    st.markdown("""
+    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
+        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
+    """, unsafe_allow_html=True)
+    
+    col_a, col_b, col_c = st.columns([2, 1, 1])
+    text    = col_a.text_input("Text", "AABAACAADAABAABA")
+    pattern = col_b.text_input("Pattern", "AABA")
+    algo    = col_c.selectbox("Algorithm", list(ALGO_MAP.keys()))
+    explain_mode = col_c.toggle("📖 Explain Mode", value=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     if not text or not pattern:
         st.warning("Please enter both text and pattern.")
@@ -119,24 +124,32 @@ def render():
 
                 t_map  = {k: v["elapsed"] for k, v in timings.items()}
                 op_map = {k: v["result"]["comparisons"] for k, v in timings.items()}
+                
+                st.session_state["string_bench_results"] = {
+                    "timings": timings, "t_map": t_map, "op_map": op_map
+                }
 
-                c1, c2 = st.columns(2)
-                c1.plotly_chart(timing_bar_chart(t_map, "⏱️ Execution Time"), use_container_width=True)
-                c2.plotly_chart(operations_bar_chart(op_map, "🔢 Comparisons"), use_container_width=True)
+        if "string_bench_results" in st.session_state:
+            res = st.session_state["string_bench_results"]
+            timings, t_map, op_map = res["timings"], res["t_map"], res["op_map"]
 
-                rows = []
-                for name, res in timings.items():
-                    rows.append({
-                        "Algorithm": name,
-                        "Time (ms)": f"{res['elapsed']*1000:.4f}",
-                        "Comparisons": res["result"]["comparisons"],
-                        "Matches found": len(res["result"]["matches"]),
-                    })
-                st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+            c1, c2 = st.columns(2)
+            c1.plotly_chart(timing_bar_chart(t_map, "⏱️ Execution Time"), use_container_width=True)
+            c2.plotly_chart(operations_bar_chart(op_map, "🔢 Comparisons"), use_container_width=True)
 
-                fastest = min(t_map, key=t_map.get)
-                fewest  = min(op_map, key=op_map.get)
-                st.success(f"🏆 **Fastest:** {fastest} | **Fewest comparisons:** {fewest}")
+            rows = []
+            for name, r in timings.items():
+                rows.append({
+                    "Algorithm": name,
+                    "Time (ms)": f"{r['elapsed']*1000:.4f}",
+                    "Comparisons": r["result"]["comparisons"],
+                    "Matches found": len(r["result"]["matches"]),
+                })
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+            fastest = min(t_map, key=t_map.get)
+            fewest  = min(op_map, key=op_map.get)
+            st.success(f"🏆 **Fastest:** {fastest} | **Fewest comparisons:** {fewest}")
 
     # ── Reference ─────────────────────────────────────────────────────────────
     with tab_ref:

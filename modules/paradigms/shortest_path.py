@@ -19,13 +19,17 @@ def compare_shortest_path(graph_dict: dict, nodes: list, edges: list, source: st
     source     : start node
     target     : end node
     """
+    from utils.timer import timer_context
+
     # Dijkstra
-    dijk = dijkstra(graph_dict, source)
+    with timer_context() as td:
+        dijk = dijkstra(graph_dict, source)
     dijk_path = reconstruct_path(dijk["predecessors"], source, target)
     dijk_dist = dijk["distances"].get(target, float("inf"))
 
     # Floyd-Warshall
-    fw = floyd_warshall(nodes, edges)
+    with timer_context() as t_fw:
+        fw = floyd_warshall(nodes, edges)
     idx = fw["idx"]
     fw_dist = fw["dist"][idx[source]][idx[target]] if source in idx and target in idx else float("inf")
 
@@ -35,11 +39,13 @@ def compare_shortest_path(graph_dict: dict, nodes: list, edges: list, source: st
             "path": dijk_path,
             "steps": dijk["steps"],
             "all_distances": dijk["distances"],
+            "elapsed": td["elapsed"],
         },
         "floyd_warshall": {
             "distance": fw_dist,
             "dist_matrix": fw["dist"],
             "nodes": fw["nodes"],
             "steps": fw["steps"],
+            "elapsed": t_fw["elapsed"],
         },
     }
