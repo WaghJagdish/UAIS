@@ -1,0 +1,274 @@
+<!-- modules/searching.html -->
+<div class="space-y-8 animate-fade-in pb-16">
+    <!-- Header -->
+    <div class="border-b border-cyber-purple/20 pb-6">
+        <div class="flex items-center gap-3 text-cyber-cyan mb-2">
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            <span class="text-[9px] font-bold tracking-[0.4em] uppercase">EXECUTION_DOMAIN: 02_SEARCHING</span>
+        </div>
+        <h1 class="text-4xl font-headline font-black tracking-tight text-on-surface">SEARCHING_ALGORITHMS</h1>
+        <p class="text-xs text-on-surface/50 font-mono mt-1">Analyze search path trajectories and pointers for Linear and Binary Search.</p>
+    </div>
+
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-12 gap-8">
+        <!-- Controls Column (Left) -->
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+            <div class="hud-border bg-surface-dark/80 p-6 space-y-6 backdrop-blur-sm">
+                <h3 class="font-headline text-sm text-cyber-cyan tracking-widest border-b border-cyber-cyan/10 pb-2 uppercase">Search Controls</h3>
+                
+                <!-- Algorithm Selector -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Algorithm</label>
+                    <select id="algo-select" class="cyber-input w-full p-2 text-xs">
+                        <option value="linear">Linear Search</option>
+                        <option value="binary">Binary Search</option>
+                    </select>
+                </div>
+
+                <!-- Input Mode Selector -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Input Mode</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 text-xs text-on-surface/80 cursor-pointer">
+                            <input type="radio" name="input-mode" value="random" checked class="cyber-input text-cyber-purple bg-onyx focus:ring-0">
+                            Random
+                        </label>
+                        <label class="flex items-center gap-2 text-xs text-on-surface/80 cursor-pointer">
+                            <input type="radio" name="input-mode" value="custom" class="cyber-input text-cyber-purple bg-onyx focus:ring-0">
+                            Custom
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Random Configurations -->
+                <div id="random-config" class="space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                            <span>Array Size</span>
+                            <span id="size-val">12</span>
+                        </div>
+                        <input id="array-size" type="range" min="5" max="25" value="12" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Custom Configurations -->
+                <div id="custom-config" class="hidden space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Custom Array</label>
+                    <input id="custom-array-input" type="text" value="10,23,34,45,56" class="cyber-input w-full p-2 text-xs" placeholder="e.g. 10,23,34,45,56">
+                </div>
+
+                <!-- Search Target -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Target Value</label>
+                    <input id="search-target" type="number" value="34" class="cyber-input w-full p-2 text-xs">
+                </div>
+
+                <div class="pt-4 border-t border-cyber-purple/10 flex flex-col gap-2">
+                    <button id="btn-generate" class="cyber-btn w-full py-2.5 text-xs">GENERATE_ARRAY.EXE</button>
+                    <button id="btn-run" class="cyber-btn-purple w-full py-2.5 text-xs text-white">START_SEARCH.SYS</button>
+                </div>
+            </div>
+
+            <!-- Legend Info -->
+            <div class="hud-border bg-surface-dark/80 p-4 space-y-3">
+                <h4 class="text-[9px] font-headline tracking-widest text-on-surface/40 uppercase">SEARCH_HUD_KEYS:</h4>
+                <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-cyber-pink border border-cyber-pink/40"></span>
+                        <span class="text-on-surface/60">Mid / Active</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-cyber-cyan border border-cyber-cyan/40"></span>
+                        <span class="text-on-surface/60">Target Found</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-slate-900 border border-cyber-purple/30"></span>
+                        <span class="text-on-surface/60">Search Range</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-slate-950/40 border border-white/5 opacity-40"></span>
+                        <span class="text-on-surface/40">Out of Range</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Display Column (Right) -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-cyber-purple/20 bg-surface-dark/40 p-1 gap-2 rounded">
+                <button id="tab-btn-visualize" class="py-2 px-6 font-headline text-xs tracking-wider border border-cyber-cyan bg-cyber-purple/10 text-cyber-cyan glow-text-cyan hover:border-cyber-cyan transition-all" onclick="switchSearchTab('visualize')">VISUALIZE</button>
+                <button id="tab-btn-compare" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchSearchTab('compare')">COMPARE_ALL</button>
+                <button id="tab-btn-complexity" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchSearchTab('complexity')">COMPLEXITY</button>
+            </div>
+
+            <!-- Tab 1: Visualize -->
+            <div id="search-tab-visualize" class="space-y-6">
+                <!-- Visualizer Render Area -->
+                <div class="hud-border bg-surface-dark/90 p-8 flex flex-col justify-between items-center" style="min-height: 480px;">
+                    <!-- Array blocks layout -->
+                    <div class="w-full flex-grow flex flex-wrap items-center justify-center gap-3 relative py-12" id="block-render-container">
+                        <!-- Blocks will be dynamically generated here -->
+                        <div class="absolute top-0 left-0 text-[8px] font-mono text-on-surface/30">VISUALIZER_HUD_OUTPUT</div>
+                    </div>
+                    
+                    <!-- Control Bar -->
+                    <div class="w-full pt-6 border-t border-cyber-purple/10 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <button id="btn-prev" class="cyber-btn px-4 py-1.5 text-[10px] font-headline flex items-center gap-1" disabled>
+                                <span class="material-symbols-outlined text-[10px]">chevron_left</span> PREV
+                            </button>
+                            <button id="btn-play" class="cyber-btn-purple px-6 py-1.5 text-[10px] font-headline text-white flex items-center gap-1" disabled>
+                                <span id="play-icon" class="material-symbols-outlined text-[10px]">play_arrow</span> <span id="play-text">PLAY</span>
+                            </button>
+                            <button id="btn-next" class="cyber-btn px-4 py-1.5 text-[10px] font-headline flex items-center gap-1" disabled>
+                                NEXT <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                            </button>
+                        </div>
+
+                        <!-- Speed slider -->
+                        <div class="flex items-center gap-3 w-48">
+                            <span class="text-[9px] font-headline text-on-surface/50">SPEED</span>
+                            <input id="speed-slider" type="range" min="100" max="1500" value="500" step="100" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                            <span class="text-[9px] font-mono text-cyber-cyan w-10 text-right" id="speed-val">500ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Panel -->
+                <div class="hud-border-purple bg-surface-dark/70 p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-cyber-purple/15 pb-2">
+                        <h4 id="viz-algo-title" class="font-headline text-xs text-cyber-cyan tracking-wider">LINEAR SEARCH</h4>
+                        <div class="flex gap-4 font-mono text-[10px] text-on-surface/50">
+                            <span>STEPS: <span id="stat-steps" class="text-on-surface">0/0</span></span>
+                            <span>COMPARISONS: <span id="stat-compare" class="text-cyber-cyan">0</span></span>
+                            <span>RESULT: <span id="stat-result" class="text-cyber-cyan">-</span></span>
+                        </div>
+                    </div>
+                    <div id="viz-description" class="text-xs font-mono text-on-surface/80 leading-relaxed min-h-[40px]">
+                        Initialize search simulation to inspect pointers.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Compare -->
+            <div id="search-tab-compare" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6 space-y-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-2">Benchmark Configuration</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Array Size</label>
+                            <input id="comp-size" type="number" min="10" max="1000" value="500" class="cyber-input w-full p-2 text-xs">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Random Seed</label>
+                            <input id="comp-seed" type="number" value="42" class="cyber-input w-full p-2 text-xs">
+                        </div>
+                        <button id="btn-run-benchmark" class="cyber-btn-purple py-2 text-xs text-white uppercase font-headline">Run Benchmark</button>
+                    </div>
+                </div>
+
+                <!-- Graphs side-by-side -->
+                <div id="benchmark-results-container" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Execution Time Chart -->
+                        <div class="hud-border bg-surface-dark/80 p-6 flex flex-col justify-between">
+                            <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2">EXECUTION TIME (MS)</h4>
+                            <div class="h-64 flex items-end justify-around gap-4 pb-2" id="chart-time-container">
+                                <!-- Bars created dynamically -->
+                            </div>
+                        </div>
+                        <!-- Operations Chart -->
+                        <div class="hud-border bg-surface-dark/80 p-6 flex flex-col justify-between">
+                            <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2">COMPARISONS MADE</h4>
+                            <div class="h-64 flex items-end justify-around gap-4 pb-2" id="chart-ops-container">
+                                <!-- Bars created dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Benchmark Table -->
+                    <div class="hud-border bg-surface-dark/80 p-6">
+                        <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">BENCHMARK DATA SUMMARY</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs font-mono text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                        <th class="py-2">Algorithm</th>
+                                        <th class="py-2">Time (ms)</th>
+                                        <th class="py-2">Comparisons</th>
+                                        <th class="py-2">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="benchmark-table-body" class="divide-y divide-white/5">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recommendation Box -->
+                    <div class="hud-border bg-surface-dark/80 p-6 border-l-4 border-l-cyber-cyan">
+                        <h4 class="font-headline text-xs text-cyber-cyan tracking-wider mb-2 uppercase">ALGORITHMIC RECOMMENDATION</h4>
+                        <p id="recommendation-text" class="text-xs font-mono text-on-surface/80 leading-relaxed">
+                            Run a benchmark to analyze search performances and receive architectural recommendations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Complexity -->
+            <div id="search-tab-complexity" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-4 mb-4">Time and Space Complexity Reference</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs font-mono text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                    <th class="py-2">Algorithm</th>
+                                    <th class="py-2">Best</th>
+                                    <th class="py-2">Average</th>
+                                    <th class="py-2">Worst</th>
+                                    <th class="py-2">Space</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Linear Search</td>
+                                    <td class="py-3">O(1)</td>
+                                    <td class="py-3">O(n)</td>
+                                    <td class="py-3">O(n)</td>
+                                    <td class="py-3">O(1)</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Binary Search</td>
+                                    <td class="py-3">O(1)</td>
+                                    <td class="py-3">O(log n)</td>
+                                    <td class="py-3">O(log n)</td>
+                                    <td class="py-3">O(1)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Descriptions expansion -->
+                <div class="space-y-4">
+                    <div class="hud-border bg-surface-dark/80 p-6">
+                        <h4 class="font-headline text-sm text-cyber-cyan mb-2 uppercase">Linear Search</h4>
+                        <p class="text-xs font-mono text-on-surface/70 leading-relaxed">
+                            Linear Search is the simplest search method. It sequentially checks each element of the list until a match is found or the whole list has been searched. It has a complexity of O(n), meaning it scales linearly with the input array size, but requires no pre-sorting.
+                        </p>
+                    </div>
+                    <div class="hud-border bg-surface-dark/80 p-6">
+                        <h4 class="font-headline text-sm text-cyber-cyan mb-2 uppercase">Binary Search</h4>
+                        <p class="text-xs font-mono text-on-surface/70 leading-relaxed">
+                            Binary Search works on a sorted array by repeatedly dividing the search interval in half. It compares the target value to the middle element of the array. If they are unequal, the half in which the target cannot lie is eliminated, and the search continues on the remaining half. This logarithmic complexity O(log n) makes it incredibly efficient for large datasets, though sorting overhead must be factored in.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

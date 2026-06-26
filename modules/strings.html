@@ -1,0 +1,262 @@
+<!-- modules/strings.html -->
+<div class="space-y-8 animate-fade-in pb-16">
+    <!-- Header -->
+    <div class="border-b border-cyber-purple/20 pb-6">
+        <div class="flex items-center gap-3 text-cyber-cyan mb-2">
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            <span class="text-[9px] font-bold tracking-[0.4em] uppercase">EXECUTION_DOMAIN: 04_STRINGS</span>
+        </div>
+        <h1 class="text-4xl font-headline font-black tracking-tight text-on-surface">STRING_MATCHING</h1>
+        <p class="text-xs text-on-surface/50 font-mono mt-1">Visualize pattern sliding algorithms: Naive, KMP, Rabin-Karp, and Boyer-Moore.</p>
+    </div>
+
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-12 gap-8">
+        <!-- Controls Column (Left) -->
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+            <div class="hud-border bg-surface-dark/80 p-6 space-y-6 backdrop-blur-sm">
+                <h3 class="font-headline text-sm text-cyber-cyan tracking-widest border-b border-cyber-cyan/10 pb-2 uppercase">Match Controls</h3>
+                
+                <!-- Text Input -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Source Text</label>
+                    <input id="text-input" type="text" value="AABAACAADAABAABA" class="cyber-input w-full p-2 text-xs">
+                </div>
+
+                <!-- Pattern Input -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Pattern to Search</label>
+                    <input id="pattern-input" type="text" value="AABA" class="cyber-input w-full p-2 text-xs">
+                </div>
+
+                <!-- Algorithm Selector -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Algorithm</label>
+                    <select id="algo-select" class="cyber-input w-full p-2 text-xs">
+                        <option value="naive">Naive Search</option>
+                        <option value="rk">Rabin-Karp</option>
+                        <option value="kmp">KMP (Knuth-Morris-Pratt)</option>
+                        <option value="bm">Boyer-Moore</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 border-t border-cyber-purple/10 flex flex-col gap-2">
+                    <button id="btn-run" class="cyber-btn-purple w-full py-2.5 text-xs text-white font-headline">START_SIMULATION.SYS</button>
+                </div>
+            </div>
+
+            <!-- Legend Info -->
+            <div class="hud-border bg-surface-dark/80 p-4 space-y-3">
+                <h4 class="text-[9px] font-headline tracking-widest text-on-surface/40 uppercase">STRING_HUD_KEYS:</h4>
+                <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-emerald-500 border border-emerald-500/40"></span>
+                        <span class="text-on-surface/60">Character Match</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-cyber-pink border border-cyber-pink/40"></span>
+                        <span class="text-on-surface/60">Character Mismatch</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-cyber-cyan border border-cyber-cyan/40"></span>
+                        <span class="text-on-surface/60">Active Pointer</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-slate-900 border border-cyber-purple/30"></span>
+                        <span class="text-on-surface/60">Completed Match</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Display Column (Right) -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-cyber-purple/20 bg-surface-dark/40 p-1 gap-2 rounded">
+                <button id="tab-btn-visualize" class="py-2 px-6 font-headline text-xs tracking-wider border border-cyber-cyan bg-cyber-purple/10 text-cyber-cyan glow-text-cyan hover:border-cyber-cyan transition-all" onclick="switchStringTab('visualize')">VISUALIZE</button>
+                <button id="tab-btn-compare" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchStringTab('compare')">COMPARE_ALL</button>
+                <button id="tab-btn-complexity" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchStringTab('complexity')">COMPLEXITY</button>
+            </div>
+
+            <!-- Tab 1: Visualize -->
+            <div id="string-tab-visualize" class="space-y-6">
+                <!-- Visualizer Render Area -->
+                <div class="hud-border bg-surface-dark/90 p-8 flex flex-col justify-between items-center" style="min-height: 480px;">
+                    <!-- Sliding grids layout -->
+                    <div class="w-full flex-grow flex flex-col justify-center gap-6 relative py-12" id="string-render-container">
+                        <!-- Text row -->
+                        <div class="flex flex-col gap-1 w-full" id="row-text-container">
+                            <div class="text-[8px] font-mono text-on-surface/40 mb-1">SOURCE_TEXT</div>
+                            <div class="flex flex-wrap gap-1.5" id="row-text-cells">
+                                <!-- Generated Dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Pattern row -->
+                        <div class="flex flex-col gap-1 w-full" id="row-pattern-container">
+                            <div class="text-[8px] font-mono text-on-surface/40 mb-1">SLIDING_PATTERN</div>
+                            <div class="flex gap-1.5 transition-all duration-300" id="row-pattern-cells">
+                                <!-- Generated Dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div class="absolute top-0 left-0 text-[8px] font-mono text-on-surface/30">VISUALIZER_HUD_OUTPUT</div>
+                    </div>
+                    
+                    <!-- Control Bar -->
+                    <div class="w-full pt-6 border-t border-cyber-purple/10 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <button id="btn-prev" class="cyber-btn px-4 py-1.5 text-[10px] font-headline flex items-center gap-1" disabled>
+                                <span class="material-symbols-outlined text-[10px]">chevron_left</span> PREV
+                            </button>
+                            <button id="btn-play" class="cyber-btn-purple px-6 py-1.5 text-[10px] font-headline text-white flex items-center gap-1" disabled>
+                                <span id="play-icon" class="material-symbols-outlined text-[10px]">play_arrow</span> <span id="play-text">PLAY</span>
+                            </button>
+                            <button id="btn-next" class="cyber-btn px-4 py-1.5 text-[10px] font-headline flex items-center gap-1" disabled>
+                                NEXT <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                            </button>
+                        </div>
+
+                        <!-- Speed slider -->
+                        <div class="flex items-center gap-3 w-48">
+                            <span class="text-[9px] font-headline text-on-surface/50">SPEED</span>
+                            <input id="speed-slider" type="range" min="100" max="1500" value="400" step="100" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                            <span class="text-[9px] font-mono text-cyber-cyan w-10 text-right" id="speed-val">400ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Panel -->
+                <div class="hud-border-purple bg-surface-dark/70 p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-cyber-purple/15 pb-2">
+                        <h4 id="viz-algo-title" class="font-headline text-xs text-cyber-cyan tracking-wider">NAIVE SEARCH</h4>
+                        <div class="flex gap-4 font-mono text-[10px] text-on-surface/50">
+                            <span>STEPS: <span id="stat-steps" class="text-on-surface">0/0</span></span>
+                            <span>COMPARISONS: <span id="stat-compare" class="text-cyber-cyan">0</span></span>
+                            <span>MATCHES: <span id="stat-matches" class="text-cyber-pink">0</span></span>
+                        </div>
+                    </div>
+                    <div id="viz-description" class="text-xs font-mono text-on-surface/80 leading-relaxed min-h-[40px]">
+                        Initialize simulation to analyze string matching sliding steps.
+                    </div>
+                </div>
+
+                <!-- Algorithm Helper Table (LPS / Bad Char) -->
+                <div id="algo-helper-table" class="hud-border bg-surface-dark/80 p-6 hidden">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab 2: Compare -->
+            <div id="string-tab-compare" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6 space-y-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-2">Benchmark Configuration</h3>
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-mono text-on-surface/40 uppercase">Verify algorithms on a larger text block (e.g. lorem ipsum):</p>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Large Source Text</label>
+                            <textarea id="comp-text" rows="4" class="cyber-input w-full p-2 text-xs font-mono">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Pattern to Search</label>
+                                <input id="comp-pattern" type="text" value="dolore" class="cyber-input w-full p-2 text-xs">
+                            </div>
+                            <button id="btn-run-benchmark" class="cyber-btn-purple py-2 text-xs text-white uppercase font-headline">Run Benchmark</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graphs side-by-side -->
+                <div id="benchmark-results-container" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Execution Time Chart -->
+                        <div class="hud-border bg-surface-dark/80 p-6 flex flex-col justify-between">
+                            <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2">EXECUTION TIME (MS)</h4>
+                            <div class="h-64 flex items-end justify-around gap-4 pb-2" id="chart-time-container">
+                                <!-- Bars created dynamically -->
+                            </div>
+                        </div>
+                        <!-- Operations Chart -->
+                        <div class="hud-border bg-surface-dark/80 p-6 flex flex-col justify-between">
+                            <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2">COMPARISONS MADE</h4>
+                            <div class="h-64 flex items-end justify-around gap-4 pb-2" id="chart-ops-container">
+                                <!-- Bars created dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Benchmark Table -->
+                    <div class="hud-border bg-surface-dark/80 p-6">
+                        <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">BENCHMARK DATA SUMMARY</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs font-mono text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                        <th class="py-2">Algorithm</th>
+                                        <th class="py-2">Time (ms)</th>
+                                        <th class="py-2">Comparisons</th>
+                                        <th class="py-2">Matches Found</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="benchmark-table-body" class="divide-y divide-white/5">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Complexity -->
+            <div id="string-tab-complexity" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-4 mb-4">Time and Space Complexity Reference</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs font-mono text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                    <th class="py-2">Algorithm</th>
+                                    <th class="py-2">Best</th>
+                                    <th class="py-2">Average</th>
+                                    <th class="py-2">Worst</th>
+                                    <th class="py-2">Space</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Naive Search</td>
+                                    <td class="py-3">O(n)</td>
+                                    <td class="py-3">O(n·m)</td>
+                                    <td class="py-3">O(n·m)</td>
+                                    <td class="py-3">O(1)</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Rabin-Karp</td>
+                                    <td class="py-3">O(n+m)</td>
+                                    <td class="py-3">O(n+m)</td>
+                                    <td class="py-3">O(n·m)</td>
+                                    <td class="py-3">O(m)</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">KMP</td>
+                                    <td class="py-3">O(n+m)</td>
+                                    <td class="py-3">O(n+m)</td>
+                                    <td class="py-3">O(n+m)</td>
+                                    <td class="py-3">O(m)</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Boyer-Moore</td>
+                                    <td class="py-3">O(n/m)</td>
+                                    <td class="py-3">O(n)</td>
+                                    <td class="py-3">O(n·m)</td>
+                                    <td class="py-3">O(m)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

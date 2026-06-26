@@ -16,31 +16,28 @@ from modules.paradigms.paradigm_visualizer import render_dp_table, render_bnb_tr
 from modules.graph.graph_visualizer import draw_graph, fig_to_bytes
 from utils.plotting import timing_bar_chart
 from utils.timer import timer_context
+from utils.ui_components import page_header, control_panel, error_boundary, recommendation_box
 
 
 # ── Knapsack UI ───────────────────────────────────────────────────────────────
 def _knapsack_ui():
-    st.markdown("### 📦 0/1 Knapsack Problem")
+    st.markdown("### 0/1 Knapsack Problem")
 
-    st.markdown("""
-    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
-        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Knapsack Inputs</h4>
-    """, unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    capacity = c1.slider("Bag capacity", 5, 100, 50)
-    n_items  = c2.slider("Number of items", 2, 10, 5)
-    explain_mode = c3.toggle("📖 Explain Mode", value=True)
+    with control_panel("Knapsack Inputs"):
+        c1, c2, c3 = st.columns(3)
+        capacity = c1.slider("Bag capacity", 5, 100, 50)
+        n_items  = c2.slider("Number of items", 2, 10, 5)
+        explain_mode = c3.toggle("Explain Mode", value=True)
 
-    st.markdown("**Item values & weights:**")
-    cols = st.columns(min(n_items, 5))
-    values, weights = [], []
-    for i in range(n_items):
-        with cols[i % 5]:
-            v = st.number_input(f"Val {i+1}", 1, 200, [10,40,30,50,35,25,15,45,20,60][i], key=f"v{i}")
-            w = st.number_input(f"Wt {i+1}", 1, 50,  [5, 4, 6, 3, 7, 8, 2, 9, 4, 6][i], key=f"w{i}")
-            values.append(v)
-            weights.append(w)
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("**Item values & weights:**")
+        cols = st.columns(min(n_items, 5))
+        values, weights = [], []
+        for i in range(n_items):
+            with cols[i % 5]:
+                v = st.number_input(f"Val {i+1}", 1, 200, [10,40,30,50,35,25,15,45,20,60][i], key=f"v{i}")
+                w = st.number_input(f"Wt {i+1}", 1, 50,  [5, 4, 6, 3, 7, 8, 2, 9, 4, 6][i], key=f"w{i}")
+                values.append(v)
+                weights.append(w)
 
     st.markdown(f"**Capacity:** `{capacity}` | **Items:** {n_items}")
     col_v, col_w = st.columns(2)
@@ -60,7 +57,7 @@ def _knapsack_ui():
     timings = {"DP": t_dp["elapsed"], "Greedy": t_gr["elapsed"], "Branch & Bound": t_bb["elapsed"]}
     values_found = {"DP": res_dp["max_value"], "Greedy": res_gr["max_value"], "Branch & Bound": res_bb["max_value"]}
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Results", "🗂️ DP Table", "🌳 B&B Tree", "📖 Steps"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Results", "DP Table", "B&B Tree", "Steps"])
 
     with tab1:
         metrics_cols = st.columns(3)
@@ -69,26 +66,26 @@ def _knapsack_ui():
         metrics_cols[2].metric("B&B (Optimal)", res_bb["max_value"], f"{t_bb['elapsed']*1000:.3f}ms")
 
         rows = [
-            {"Method": "DP", "Max Value": res_dp["max_value"], "Selected Items": str([i+1 for i in res_dp["selected_items"]]), "Optimal?": "✅ Yes", "Time (ms)": f"{t_dp['elapsed']*1000:.4f}"},
-            {"Method": "Greedy", "Max Value": res_gr["max_value"], "Selected Items": str([i+1 for i in res_gr["selected_items"]]), "Optimal?": "⚠️ Approximate", "Time (ms)": f"{t_gr['elapsed']*1000:.4f}"},
-            {"Method": "B&B",   "Max Value": res_bb["max_value"], "Selected Items": str([i+1 for i in res_bb["selected_items"]]), "Optimal?": "✅ Yes", "Time (ms)": f"{t_bb['elapsed']*1000:.4f}"},
+            {"Method": "DP", "Max Value": res_dp["max_value"], "Selected Items": str([i+1 for i in res_dp["selected_items"]]), "Optimal?": "Yes", "Time (ms)": f"{t_dp['elapsed']*1000:.4f}"},
+            {"Method": "Greedy", "Max Value": res_gr["max_value"], "Selected Items": str([i+1 for i in res_gr["selected_items"]]), "Optimal?": "Approximate", "Time (ms)": f"{t_gr['elapsed']*1000:.4f}"},
+            {"Method": "B&B",   "Max Value": res_bb["max_value"], "Selected Items": str([i+1 for i in res_bb["selected_items"]]), "Optimal?": "Yes", "Time (ms)": f"{t_bb['elapsed']*1000:.4f}"},
         ]
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-        st.plotly_chart(timing_bar_chart(timings, "⏱️ Time Comparison"), use_container_width=True)
+        st.plotly_chart(timing_bar_chart(timings, "Time Comparison"), use_container_width=True, key="ks_timing_chart")
 
         approx_gap = abs(res_dp["max_value"] - res_gr["max_value"])
         if approx_gap > 0:
-            st.warning(f"⚠️ Greedy approximation gap: **{approx_gap}** units below optimal.")
+            st.warning(f"Greedy approximation gap: **{approx_gap}** units below optimal.")
         else:
-            st.success("✅ Greedy found the optimal solution for this input!")
+            st.success("Greedy found the optimal solution for this input!")
 
     with tab2:
         st.markdown("DP fills a `(n+1) × (W+1)` table where `dp[i][w]` = max value using first `i` items with capacity `w`.")
-        st.plotly_chart(render_dp_table(res_dp["dp_table"], weights, capacity), use_container_width=True)
+        st.plotly_chart(render_dp_table(res_dp["dp_table"], weights, capacity), use_container_width=True, key="ks_dp_table")
 
     with tab3:
         st.markdown("Each node explores an Include/Exclude decision for an item. Green = include, Red = exclude.")
-        st.plotly_chart(render_bnb_tree(res_bb["steps"]), use_container_width=True)
+        st.plotly_chart(render_bnb_tree(res_bb["steps"]), use_container_width=True, key="ks_bnb_tree")
         st.caption(f"Total nodes explored: **{res_bb['nodes_explored']}**")
 
     with tab4:
@@ -101,7 +98,7 @@ def _knapsack_ui():
 
 # ── Shortest Path UI ──────────────────────────────────────────────────────────
 def _shortest_path_ui():
-    st.markdown("### 🧭 Shortest Path Comparison — Dijkstra vs Floyd-Warshall")
+    st.markdown("### Shortest Path Comparison — Dijkstra vs Floyd-Warshall")
 
     DEFAULT_EDGES = [
         ("A","B",4),("A","C",2),("B","C",1),("B","D",5),
@@ -109,20 +106,16 @@ def _shortest_path_ui():
     ]
     DEFAULT_NODES = ["A","B","C","D","E","F"]
 
-    st.markdown("""
-    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
-        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Graph Input</h4>
-    """, unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([2, 1, 1])
-    raw_edges = c1.text_area(
-        "Edges (u,v,weight per line)",
-        "\n".join(f"{u},{v},{w}" for u,v,w in DEFAULT_EDGES),
-        height=100
-    )
-    source = c2.text_input("Source node", "A")
-    target = c2.text_input("Target node", "F")
-    explain_mode = c3.toggle("📖 Explain Mode", value=True, key="sp_exp")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with control_panel("Graph Input"):
+        c1, c2, c3 = st.columns([2, 1, 1])
+        raw_edges = c1.text_area(
+            "Edges (u,v,weight per line)",
+            "\n".join(f"{u},{v},{w}" for u,v,w in DEFAULT_EDGES),
+            height=100
+        )
+        source = c2.text_input("Source node", "A")
+        target = c2.text_input("Target node", "F")
+        explain_mode = c3.toggle("Explain Mode", value=True, key="sp_exp")
 
     # Parse edges
     nodes, edges, graph_dict = [], [], {}
@@ -150,7 +143,7 @@ def _shortest_path_ui():
     dijk = results["dijkstra"]
     fw   = results["floyd_warshall"]
 
-    tab1, tab2, tab3 = st.tabs(["📊 Comparison", "🗺️ Graph", "📐 FW Matrix"])
+    tab1, tab2, tab3 = st.tabs(["Comparison", "Graph", "FW Matrix"])
 
     with tab1:
         c1, c2 = st.columns(2)
@@ -167,7 +160,7 @@ def _shortest_path_ui():
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
         timings_sp = {"Dijkstra": dijk["elapsed"], "Floyd-Warshall": fw["elapsed"]}
-        st.plotly_chart(timing_bar_chart(timings_sp, "⏱️ Runtime Comparison"), use_container_width=True)
+        st.plotly_chart(timing_bar_chart(timings_sp, "Runtime Comparison"), use_container_width=True, key="sp_timing_chart")
 
         if explain_mode and dijk["steps"]:
             st.markdown("**Dijkstra Steps (first 15):**")
@@ -190,12 +183,12 @@ def _shortest_path_ui():
         st.image(fig_to_bytes(fig_with_path), use_container_width=True)
 
     with tab3:
-        st.plotly_chart(render_fw_matrix(fw["dist_matrix"], fw["nodes"]), use_container_width=True)
+        st.plotly_chart(render_fw_matrix(fw["dist_matrix"], fw["nodes"]), use_container_width=True, key="sp_fw_matrix")
 
 
 # ── TSP UI ────────────────────────────────────────────────────────────────────
 def _tsp_ui():
-    st.markdown("### 🧳 Travelling Salesman Problem — DP (Held-Karp) vs Branch & Bound")
+    st.markdown("### Travelling Salesman Problem — DP (Held-Karp) vs Branch & Bound")
 
     DEFAULT_MATRIX = [
         [0,  10, 15, 20],
@@ -205,24 +198,20 @@ def _tsp_ui():
     ]
     DEFAULT_NAMES = ["A","B","C","D"]
 
-    st.markdown("""
-    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
-        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ TSP Inputs</h4>
-    """, unsafe_allow_html=True)
-    c1, c2 = st.columns([1, 2])
-    n_cities = c1.slider("Number of cities", 3, 7, 4)
-    explain_mode = c1.toggle("📖 Explain Mode", value=True, key="tsp_exp")
-    
-    Cols = c2.columns(n_cities)
-    city_names = [Cols[i].text_input(f"City {i+1}", DEFAULT_NAMES[i] if i < len(DEFAULT_NAMES) else f"C{i+1}", key=f"cn{i}") for i in range(n_cities)]
-    
-    st.markdown("**Distance matrix (row-by-row, comma-separated):**")
-    raw_matrix = st.text_area(
-        "Distance matrix",
-        "\n".join(",".join(str(DEFAULT_MATRIX[i][j]) if i < 4 and j < 4 else "0" for j in range(n_cities)) for i in range(n_cities)),
-        height=100, label_visibility="collapsed"
-    )
-    st.markdown("</div>", unsafe_allow_html=True)
+    with control_panel("TSP Inputs"):
+        c1, c2 = st.columns([1, 2])
+        n_cities = c1.slider("Number of cities", 3, 7, 4)
+        explain_mode = c1.toggle("Explain Mode", value=True, key="tsp_exp")
+        
+        Cols = c2.columns(n_cities)
+        city_names = [Cols[i].text_input(f"City {i+1}", DEFAULT_NAMES[i] if i < len(DEFAULT_NAMES) else f"C{i+1}", key=f"cn{i}") for i in range(n_cities)]
+        
+        st.markdown("**Distance matrix (row-by-row, comma-separated):**")
+        raw_matrix = st.text_area(
+            "Distance matrix",
+            "\n".join(",".join(str(DEFAULT_MATRIX[i][j]) if i < 4 and j < 4 else "0" for j in range(n_cities)) for i in range(n_cities)),
+            height=100, label_visibility="collapsed"
+        )
 
     # Parse matrix
     try:
@@ -247,7 +236,7 @@ def _tsp_ui():
                 res_dp = tsp_dp(dist_matrix, city_names)
         res_bb = None
 
-    tab1, tab2 = st.tabs(["📊 Results", "📖 Steps"])
+    tab1, tab2 = st.tabs(["Results", "Steps"])
 
     with tab1:
         c1, c2 = st.columns(2)
@@ -276,25 +265,24 @@ def _tsp_ui():
 
 
 # ── Main render ───────────────────────────────────────────────────────────────
+@error_boundary("Algorithm Paradigms")
 def render():
-    st.markdown("""
-    <h1 style='text-align:center;background:linear-gradient(135deg,#4facfe,#00f2fe);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.4rem;'>
-    🧩 Algorithm Paradigms</h1>
-    <p style='text-align:center;color:#95A5A6;'>
-    Compare Greedy / DP / Branch & Bound on classic problems.</p>
-    """, unsafe_allow_html=True)
+    page_header(
+        "Algorithm Paradigms",
+        "Compare Greedy / DP / Branch & Bound on classic problems.",
+        "paradigms"
+    )
 
     problem = st.selectbox(
         "Select Problem",
-        ["📦 0/1 Knapsack", "🧭 Shortest Path", "🧳 TSP"],
+        ["0/1 Knapsack", "Shortest Path", "TSP"],
         label_visibility="collapsed",
     )
     st.divider()
 
-    if problem == "📦 0/1 Knapsack":
+    if problem == "0/1 Knapsack":
         _knapsack_ui()
-    elif problem == "🧭 Shortest Path":
+    elif problem == "Shortest Path":
         _shortest_path_ui()
-    elif problem == "🧳 TSP":
+    elif problem == "TSP":
         _tsp_ui()

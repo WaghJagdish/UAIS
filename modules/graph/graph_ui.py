@@ -13,6 +13,7 @@ from modules.graph.graph_image_parser import parse_graph_from_image
 from utils.timer import timer_context
 from utils.plotting import timing_bar_chart
 from utils.constants import GRAPH_ALGORITHMS
+from utils.ui_components import page_header, control_panel, error_boundary, recommendation_box
 
 
 DEFAULT_EDGES_STR = """A,B,4
@@ -53,43 +54,37 @@ def _build_graph_dict(nodes, edges):
     return gd
 
 
+@error_boundary("Graph Algorithms")
 def render():
-    st.markdown("""
-    <h1 style='text-align:center;background:linear-gradient(135deg,#a18cd1,#fbc2eb);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.4rem;'>
-    🕸️ Graph Algorithm Visualizer</h1>
-    <p style='text-align:center;color:#95A5A6;'>
-    Dijkstra · Kruskal · Prim — with manual or image input.</p>
-    """, unsafe_allow_html=True)
+    page_header(
+        "Graph Algorithm Visualizer",
+        "Dijkstra, Kruskal, Prim — with manual or image input.",
+        "graph"
+    )
 
-    st.markdown("""
-    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
-        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
-    """, unsafe_allow_html=True)
-    
-    col_a, col_b = st.columns([1, 2])
-    input_method = col_a.radio("Input Method", ["✏️ Manual edges", "🖼️ Upload image"])
+    with control_panel("Visualization Controls"):
+        col_a, col_b = st.columns([1, 2])
+        input_method = col_a.radio("Input Method", ["Manual edges", "Upload image"])
 
-    if input_method == "✏️ Manual edges":
-        raw_edges = col_b.text_area("Edges (u,v,weight per line)", DEFAULT_EDGES_STR, height=135)
-        nodes, edges = _parse_edges(raw_edges)
-    else:
-        uploaded = col_b.file_uploader("Upload graph image", type=["png","jpg","jpeg"])
-        if uploaded:
-            result = parse_graph_from_image(uploaded.read())
-            col_b.info(result["message"])
-            raw_fallback = col_b.text_area("Define edges manually below:", DEFAULT_EDGES_STR, height=100)
-            nodes, edges = _parse_edges(raw_fallback)
+        if input_method == "Manual edges":
+            raw_edges = col_b.text_area("Edges (u,v,weight per line)", DEFAULT_EDGES_STR, height=135)
+            nodes, edges = _parse_edges(raw_edges)
         else:
-            col_b.info("Upload an image or use Manual mode.")
-            nodes, edges = _parse_edges(DEFAULT_EDGES_STR)
+            uploaded = col_b.file_uploader("Upload graph image", type=["png","jpg","jpeg"])
+            if uploaded:
+                result = parse_graph_from_image(uploaded.read())
+                col_b.info(result["message"])
+                raw_fallback = col_b.text_area("Define edges manually below:", DEFAULT_EDGES_STR, height=100)
+                nodes, edges = _parse_edges(raw_fallback)
+            else:
+                col_b.info("Upload an image or use Manual mode.")
+                nodes, edges = _parse_edges(DEFAULT_EDGES_STR)
 
-    c1, c2, c3, c4 = st.columns(4)
-    source_node = c1.text_input("Source node (Dijkstra)", nodes[0] if nodes else "A")
-    target_node = c2.text_input("Target node (Dijkstra)", nodes[-1] if nodes else "F")
-    algorithm   = c3.selectbox("Highlight algorithm", ["Dijkstra", "Kruskal", "Prim"])
-    explain_mode = c4.toggle("📖 Explain Mode", value=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+        c1, c2, c3, c4 = st.columns(4)
+        source_node = c1.text_input("Source node (Dijkstra)", nodes[0] if nodes else "A")
+        target_node = c2.text_input("Target node (Dijkstra)", nodes[-1] if nodes else "F")
+        algorithm   = c3.selectbox("Highlight algorithm", ["Dijkstra", "Kruskal", "Prim"])
+        explain_mode = c4.toggle("Explain Mode", value=True)
 
     if not nodes or not edges:
         st.warning("No valid edges found. Add edges in the format `u,v,weight`.")
@@ -112,7 +107,7 @@ def render():
             res_prim = prim(nodes, adj)
 
     tab_graph, tab_results, tab_steps, tab_complexity = st.tabs(
-        ["🗺️ Graph View", "📊 Results", "📖 Steps", "📚 Complexity"]
+        ["Graph View", "Results", "Steps", "Complexity"]
     )
 
     # ── Graph View ────────────────────────────────────────────────────────────
@@ -149,7 +144,7 @@ def render():
         c3.markdown(f"Edges: {len(res_prim['mst'])}")
 
         timings = {"Dijkstra": td["elapsed"], "Kruskal": tk["elapsed"], "Prim": tp["elapsed"]}
-        st.plotly_chart(timing_bar_chart(timings, "⏱️ Runtime Comparison"), use_container_width=True)
+        st.plotly_chart(timing_bar_chart(timings, "Runtime Comparison"), use_container_width=True, key="graph_timing_chart")
 
         rows = [
             {"Algorithm": "Dijkstra", "Result": f"dist={dist_dijk:.1f}", "Steps": len(res_dijk["steps"]),

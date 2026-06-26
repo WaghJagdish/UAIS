@@ -6,7 +6,7 @@ Plotly-based step-by-step bar chart visualizer for sorting algorithms.
 import plotly.graph_objects as go
 from utils.constants import (
     COLOR_DEFAULT, COLOR_COMPARE, COLOR_ACTIVE,
-    COLOR_SORTED, COLOR_PIVOT, COLOR_BG,
+    COLOR_SORTED, COLOR_PIVOT, COLOR_BG, COLOR_TEXT,
 )
 
 
@@ -52,20 +52,31 @@ def build_sort_figure(step: dict, step_num: int, total_steps: int) -> go.Figure:
     fig.update_layout(
         title=dict(
             text=f"Step {step_num}/{total_steps}",
-            font=dict(size=14, color="#ECF0F1"),
+            font=dict(size=14, color=COLOR_TEXT, family="JetBrains Mono, monospace"),
         ),
-        xaxis=dict(title="Index", tickmode="array", tickvals=list(range(len(arr)))),
-        yaxis=dict(title="Value", range=[0, max(arr) * 1.25 if arr else 1]),
+        xaxis=dict(
+            title=dict(text="Index", font=dict(family="JetBrains Mono, monospace")),
+            tickmode="array",
+            tickvals=list(range(len(arr))),
+            gridcolor="#464555",
+            linecolor="#464555",
+        ),
+        yaxis=dict(
+            title=dict(text="Value", font=dict(family="JetBrains Mono, monospace")),
+            range=[0, max(arr) * 1.25 if arr else 1],
+            gridcolor="#464555",
+            linecolor="#464555",
+        ),
         paper_bgcolor=COLOR_BG,
         plot_bgcolor=COLOR_BG,
-        font=dict(color="#ECF0F1", family="Inter, sans-serif"),
+        font=dict(color=COLOR_TEXT, family="Inter, sans-serif"),
         showlegend=False,
         annotations=[dict(
             text=desc,
             xref="paper", yref="paper",
             x=0.5, y=-0.18,
             showarrow=False,
-            font=dict(size=13, color="#F39C12"),
+            font=dict(size=13, color=COLOR_ACTIVE, family="JetBrains Mono, monospace"),
         )],
     )
     return fig

@@ -1,0 +1,239 @@
+<!-- modules/paradigms.html -->
+<div class="space-y-8 animate-fade-in pb-16">
+    <!-- Header -->
+    <div class="border-b border-cyber-purple/20 pb-6">
+        <div class="flex items-center gap-3 text-cyber-cyan mb-2">
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            <span class="text-[9px] font-bold tracking-[0.4em] uppercase">EXECUTION_DOMAIN: 03_PARADIGMS</span>
+        </div>
+        <h1 class="text-4xl font-headline font-black tracking-tight text-on-surface">ALGORITHM_PARADIGMS</h1>
+        <p class="text-xs text-on-surface/50 font-mono mt-1">Compare Dynamic Programming, Greedy Strategy, and Branch & Bound on NP-hard computational challenges.</p>
+    </div>
+
+    <!-- Problem Selector -->
+    <div class="hud-border bg-surface-dark/80 p-4 flex items-center justify-between gap-4">
+        <span class="text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">Select Problem Space:</span>
+        <select id="problem-select" class="cyber-input w-64 p-2 text-xs font-headline" onchange="switchProblemSpace(this.value)">
+            <option value="knapsack">0/1 Knapsack Problem</option>
+            <option value="tsp">Travelling Salesman Problem (TSP)</option>
+        </select>
+    </div>
+
+    <!-- Problem 1: 0/1 Knapsack Panel -->
+    <div id="panel-knapsack" class="grid grid-cols-12 gap-8">
+        <!-- Inputs (Left) -->
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+            <div class="hud-border bg-surface-dark/80 p-6 space-y-6">
+                <h3 class="font-headline text-xs text-cyber-cyan tracking-widest border-b border-cyber-cyan/10 pb-2 uppercase">Knapsack Configurations</h3>
+                
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                        <span>Bag Capacity</span>
+                        <span id="ks-cap-val">50</span>
+                    </div>
+                    <input id="ks-capacity" type="range" min="5" max="100" value="50" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                        <span>Number of Items</span>
+                        <span id="ks-items-val">5</span>
+                    </div>
+                    <input id="ks-items-count" type="range" min="2" max="10" value="5" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                </div>
+
+                <!-- Dynamically generated items values and weights inputs -->
+                <div class="space-y-4 pt-2 border-t border-cyber-purple/10">
+                    <label class="text-[10px] font-headline tracking-widest text-cyber-purple block uppercase">Item Weight & Value parameters</label>
+                    <div id="ks-items-grid" class="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                        <!-- Dynamic inputs -->
+                    </div>
+                </div>
+
+                <button id="btn-ks-solve" class="cyber-btn-purple w-full py-2.5 text-xs text-white font-headline">SOLVE_KNAPSACK.SYS</button>
+            </div>
+        </div>
+
+        <!-- Main view (Right) -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <!-- Nav Tabs -->
+            <div class="flex border-b border-cyber-purple/20 bg-surface-dark/40 p-1 gap-2 rounded">
+                <button id="ks-tab-btn-results" class="py-2 px-6 font-headline text-xs tracking-wider border border-cyber-cyan bg-cyber-purple/10 text-cyber-cyan glow-text-cyan hover:border-cyber-cyan transition-all" onclick="switchKsTab('results')">RESULTS</button>
+                <button id="ks-tab-btn-dptable" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchKsTab('dptable')">DP_TABLE</button>
+                <button id="ks-tab-btn-steps" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchKsTab('steps')">STEPS_LOG</button>
+            </div>
+
+            <!-- Tab: Results -->
+            <div id="ks-tab-results" class="space-y-6">
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="hud-border bg-surface-dark/80 p-4">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Dynamic Programming</span>
+                        <div class="text-3xl font-headline font-black text-cyber-cyan mt-1" id="ks-metric-dp">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple" id="ks-time-dp">0.00ms</span>
+                    </div>
+                    <div class="hud-border bg-surface-dark/80 p-4">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Greedy (Approx)</span>
+                        <div class="text-3xl font-headline font-black text-cyber-pink mt-1" id="ks-metric-greedy">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple" id="ks-time-greedy">0.00ms</span>
+                    </div>
+                    <div class="hud-border bg-surface-dark/80 p-4">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Branch & Bound</span>
+                        <div class="text-3xl font-headline font-black text-cyber-cyan mt-1" id="ks-metric-bb">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple" id="ks-time-bb">0.00ms</span>
+                    </div>
+                </div>
+
+                <!-- Table summary -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Paradigm execution summary</h4>
+                    <table class="w-full text-xs font-mono text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                <th class="py-2">Method</th>
+                                <th class="py-2">Max Value</th>
+                                <th class="py-2">Selected Items</th>
+                                <th class="py-2">Optimal?</th>
+                                <th class="py-2">Time (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ks-results-table-body" class="divide-y divide-white/5">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Runtime Chart -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Runtime comparison</h4>
+                    <div class="h-56 flex items-end justify-around gap-4 pb-2" id="ks-chart-container">
+                        <!-- Chart generated in JS -->
+                    </div>
+                </div>
+
+                <!-- Approximation Gap Warning box -->
+                <div id="ks-gap-box" class="hud-border bg-surface-dark/80 p-6 hidden">
+                    <!-- Dynamic message -->
+                </div>
+            </div>
+
+            <!-- Tab: DP Table -->
+            <div id="ks-tab-dptable" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6 space-y-4">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-2">Dynamic Programming Table Grid</h3>
+                    <p class="text-xs font-mono text-on-surface/60 leading-relaxed">
+                        DP builds a <code>(N+1) x (W+1)</code> table where cell <code>dp[i][w]</code> represents the maximum profit using the first <code>i</code> items with a capacity constraint of <code>w</code>. Hover over cells to see value coordinates.
+                    </p>
+                    <div class="overflow-auto max-w-full" id="ks-dp-grid-wrapper">
+                        <!-- Dynamic grid -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Steps Log -->
+            <div id="ks-tab-steps" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-4 mb-4">Calculation steps ledger</h3>
+                    <div class="space-y-2 max-h-96 overflow-y-auto font-mono text-xs pr-2" id="ks-steps-log">
+                        <!-- Dynamic list -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Problem 2: TSP Panel -->
+    <div id="panel-tsp" class="hidden grid grid-cols-12 gap-8">
+        <!-- Inputs (Left) -->
+        <div class="col-span-12 lg:col-span-5 space-y-6">
+            <div class="hud-border bg-surface-dark/80 p-6 space-y-6">
+                <h3 class="font-headline text-xs text-cyber-cyan tracking-widest border-b border-cyber-cyan/10 pb-2 uppercase">TSP Configurations</h3>
+                
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                        <span>Number of Cities</span>
+                        <span id="tsp-cities-val">4</span>
+                    </div>
+                    <input id="tsp-cities-count" type="range" min="3" max="7" value="4" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                </div>
+
+                <!-- Distance matrix input grid -->
+                <div class="space-y-4 pt-2 border-t border-cyber-purple/10">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[10px] font-headline tracking-widest text-cyber-purple block uppercase">Distance Matrix (Row x Col)</label>
+                        <button class="text-[9px] font-headline text-cyber-cyan hover:underline" onclick="generateDefaultTSPMatrix()">RESET_DEFAULT</button>
+                    </div>
+                    <div id="tsp-matrix-grid" class="grid gap-2 font-mono text-xs overflow-x-auto p-1">
+                        <!-- Dynamic grid of matrix inputs -->
+                    </div>
+                </div>
+
+                <button id="btn-tsp-solve" class="cyber-btn-purple w-full py-2.5 text-xs text-white font-headline">SOLVE_TSP.SYS</button>
+            </div>
+        </div>
+
+        <!-- Main view (Right) -->
+        <div class="col-span-12 lg:col-span-7 space-y-6">
+            <!-- Nav Tabs -->
+            <div class="flex border-b border-cyber-purple/20 bg-surface-dark/40 p-1 gap-2 rounded">
+                <button id="tsp-tab-btn-results" class="py-2 px-6 font-headline text-xs tracking-wider border border-cyber-cyan bg-cyber-purple/10 text-cyber-cyan glow-text-cyan hover:border-cyber-cyan transition-all" onclick="switchTspTab('results')">RESULTS</button>
+                <button id="tsp-tab-btn-steps" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchTspTab('steps')">EXPLORATION_STEPS</button>
+            </div>
+
+            <!-- Tab: Results -->
+            <div id="tsp-tab-results" class="space-y-6">
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="hud-border bg-surface-dark/80 p-4">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Dynamic Programming Tour</span>
+                        <div class="text-3xl font-headline font-black text-cyber-cyan mt-1" id="tsp-metric-dp-cost">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple" id="tsp-path-dp">Optimal path will display here</span>
+                    </div>
+                    <div class="hud-border bg-surface-dark/80 p-4">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Branch & Bound Tour</span>
+                        <div class="text-3xl font-headline font-black text-cyber-pink mt-1" id="tsp-metric-bb-cost">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple" id="tsp-path-bb">Explored nodes: 0</span>
+                    </div>
+                </div>
+
+                <!-- Table summary -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Algorithm execution details</h4>
+                    <table class="w-full text-xs font-mono text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                <th class="py-2">Method</th>
+                                <th class="py-2">Min Cost</th>
+                                <th class="py-2">Optimal Tour</th>
+                                <th class="py-2">Time (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tsp-results-table-body" class="divide-y divide-white/5">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Path visualization panel -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Tour trajectory chart</h4>
+                    <div class="h-64 flex items-center justify-center border border-white/5 bg-onyx relative overflow-hidden" id="tsp-tour-canvas-container">
+                        <!-- Dynamic tour graph visualization using Canvas -->
+                        <canvas id="tsp-tour-canvas" class="w-full h-full"></canvas>
+                        <div class="absolute top-2 left-2 text-[8px] font-mono text-on-surface/30">TSP_2D_MAP_PLOT</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Steps Log -->
+            <div id="tsp-tab-steps" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/10 pb-4 mb-4">DP & BnB exploration path</h3>
+                    <div class="space-y-2 max-h-96 overflow-y-auto font-mono text-xs pr-2" id="tsp-steps-log">
+                        <!-- Dynamic list -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

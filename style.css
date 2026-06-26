@@ -1,0 +1,182 @@
+/* style.css */
+
+body {
+    background-color: #060608;
+    color: #e0e0ff;
+    overflow-x: hidden;
+}
+
+/* Scanline Effect */
+.scanline {
+    width: 100%;
+    height: 100px;
+    z-index: 99;
+    background: linear-gradient(0deg, rgba(188, 19, 254, 0) 0%, rgba(188, 19, 254, 0.05) 50%, rgba(188, 19, 254, 0) 100%);
+    opacity: 0.15;
+    position: fixed;
+    bottom: 100%;
+    pointer-events: none;
+    animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+    0% { bottom: 100%; }
+    100% { bottom: -100px; }
+}
+
+/* Cyber HUD Border Corners */
+.hud-border {
+    border: 1px solid rgba(5, 255, 161, 0.2);
+    position: relative;
+    border-radius: 4px;
+}
+.hud-border::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 10px; height: 10px;
+    border-top: 2px solid #05ffa1;
+    border-left: 2px solid #05ffa1;
+    pointer-events: none;
+}
+.hud-border::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 10px; height: 10px;
+    border-bottom: 2px solid #05ffa1;
+    border-right: 2px solid #05ffa1;
+    pointer-events: none;
+}
+
+/* Purple Accent HUD Border */
+.hud-border-purple {
+    border: 1px solid rgba(188, 19, 254, 0.2);
+    position: relative;
+    border-radius: 4px;
+}
+.hud-border-purple::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 10px; height: 10px;
+    border-top: 2px solid #bc13fe;
+    border-left: 2px solid #bc13fe;
+    pointer-events: none;
+}
+.hud-border-purple::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 10px; height: 10px;
+    border-bottom: 2px solid #bc13fe;
+    border-right: 2px solid #bc13fe;
+    pointer-events: none;
+}
+
+/* Glow Text */
+.glow-text-cyan {
+    text-shadow: 0 0 10px rgba(5, 255, 161, 0.5);
+}
+.glow-text-purple {
+    text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+}
+.glow-text-pink {
+    text-shadow: 0 0 10px rgba(255, 0, 230, 0.5);
+}
+
+/* Hexagon Nav Clip */
+.hexagon-nav {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #060608;
+}
+::-webkit-scrollbar-thumb {
+    background: #bc13fe;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #05ffa1;
+}
+
+/* Animation Utilities */
+@keyframes pulse-cyan {
+    0%, 100% { box-shadow: 0 0 5px rgba(5, 255, 161, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(5, 255, 161, 0.6); }
+}
+.active-node {
+    animation: pulse-cyan 2s infinite;
+}
+
+/* Modern Sci-Fi Controls */
+.cyber-input {
+    background-color: #0d0d12 !important;
+    border: 1px solid rgba(188, 19, 254, 0.3) !important;
+    color: #e0e0ff !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+}
+.cyber-input:focus {
+    border-color: #05ffa1 !important;
+    box-shadow: 0 0 8px rgba(5, 255, 161, 0.2) !important;
+    outline: none !important;
+}
+
+.cyber-btn {
+    background: rgba(13, 13, 18, 0.8);
+    color: #05ffa1;
+    border: 1px solid rgba(5, 255, 161, 0.3);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.cyber-btn:hover {
+    border-color: #05ffa1;
+    background: #05ffa1;
+    color: #060608;
+    box-shadow: 0 0 12px rgba(5, 255, 161, 0.3);
+}
+.cyber-btn:active {
+    transform: scale(0.98);
+}
+
+.cyber-btn-purple {
+    background: rgba(13, 13, 18, 0.8);
+    color: #bc13fe;
+    border: 1px solid rgba(188, 19, 254, 0.3);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.cyber-btn-purple:hover {
+    border-color: #bc13fe;
+    background: #bc13fe;
+    color: #e0e0ff;
+    box-shadow: 0 0 12px rgba(188, 19, 254, 0.3);
+}
+
+/* Visualization Bar / Node elements */
+.viz-bar {
+    transition: height 0.2s ease, background-color 0.2s ease;
+}
+
+/* Custom visualizer grid styling */
+.glass-panel {
+    background: rgba(13, 13, 18, 0.65);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}

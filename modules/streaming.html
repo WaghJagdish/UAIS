@@ -1,0 +1,342 @@
+<!-- modules/streaming.html -->
+<div class="space-y-8 animate-fade-in pb-16">
+    <!-- Header -->
+    <div class="border-b border-cyber-purple/20 pb-6">
+        <div class="flex items-center gap-3 text-cyber-cyan mb-2">
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            <span class="text-[9px] font-bold tracking-[0.4em] uppercase">EXECUTION_DOMAIN: 06_STREAMING</span>
+        </div>
+        <h1 class="text-4xl font-headline font-black tracking-tight text-on-surface">STREAMING_ALGORITHMS</h1>
+        <p class="text-xs text-on-surface/50 font-mono mt-1">Estimate frequency and sample data streams in real-time under tight space constraints.</p>
+    </div>
+
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-12 gap-8">
+        <!-- Controls Column (Left) -->
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+            <div class="hud-border bg-surface-dark/80 p-6 space-y-6 backdrop-blur-sm">
+                <h3 class="font-headline text-sm text-cyber-cyan tracking-widest border-b border-cyber-cyan/10 pb-2 uppercase">Streaming Controls</h3>
+                
+                <!-- Stream Preset Selector -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Sample Stream</label>
+                    <select id="stream-preset" class="cyber-input w-full p-2 text-xs">
+                        <option value="letters">Letters preset (A-E, N=42)</option>
+                        <option value="numbers">Numbers preset (1-5, N=40)</option>
+                        <option value="words">Fruit Words preset (N=22)</option>
+                        <option value="custom">Custom Text Stream</option>
+                    </select>
+                </div>
+
+                <!-- Custom Stream Input (conditional) -->
+                <div id="custom-stream-container" class="hidden space-y-2">
+                    <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Custom Stream Items</label>
+                    <input id="custom-stream-input" type="text" value="X,Y,Z,X,X,Y,Z,W,W,Z" class="cyber-input w-full p-2 text-xs" placeholder="comma-separated values">
+                </div>
+
+                <!-- Parameters Sliders -->
+                <div class="space-y-4 pt-2 border-t border-white/5">
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                            <span>Reservoir Size (k)</span>
+                            <span id="k-val">5</span>
+                        </div>
+                        <input id="reservoir-k" type="range" min="2" max="15" value="5" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                            <span>CMS Width (w)</span>
+                            <span id="cms-w-val">20</span>
+                        </div>
+                        <input id="cms-w" type="range" min="5" max="30" value="20" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-headline tracking-widest text-on-surface/60 uppercase">
+                            <span>CMS Depth (d)</span>
+                            <span id="cms-d-val">3</span>
+                        </div>
+                        <input id="cms-d" type="range" min="2" max="6" value="3" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-cyber-purple/10 flex flex-col gap-2">
+                    <button id="btn-generate" class="cyber-btn w-full py-2.5 text-xs">GENERATE_STREAM.EXE</button>
+                    <button id="btn-run" class="cyber-btn-purple w-full py-2.5 text-xs text-white">START_SIMULATION.SYS</button>
+                </div>
+            </div>
+
+            <!-- Legend Info -->
+            <div id="streaming-legend" class="hud-border bg-surface-dark/80 p-4 space-y-3">
+                <h4 class="text-[9px] font-headline tracking-widest text-on-surface/40 uppercase">STREAM_STATS:</h4>
+                <div class="text-xs font-mono space-y-1 text-on-surface/60">
+                    <div>Length: <span id="stat-stream-length" class="text-cyber-cyan font-bold">0</span></div>
+                    <div>Unique Items: <span id="stat-stream-vocab" class="text-cyber-pink font-bold">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Display Column (Right) -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-cyber-purple/20 bg-surface-dark/40 p-1 gap-2 rounded">
+                <button id="tab-btn-exact" class="py-2 px-6 font-headline text-xs tracking-wider border border-cyber-cyan bg-cyber-purple/10 text-cyber-cyan glow-text-cyan hover:border-cyber-cyan transition-all" onclick="switchStreamingTab('exact')">EXACT_COUNT</button>
+                <button id="tab-btn-reservoir" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchStreamingTab('reservoir')">RESERVOIR_SAMPLE</button>
+                <button id="tab-btn-cms" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchStreamingTab('cms')">COUNT_MIN_SKETCH</button>
+                <button id="tab-btn-compare" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchStreamingTab('compare')">COMPARE_SCALE</button>
+                <button id="tab-btn-reference" class="py-2 px-6 font-headline text-xs tracking-wider border border-transparent text-on-surface/60 hover:text-on-surface hover:border-cyber-purple/40 transition-all" onclick="switchStreamingTab('reference')">REFERENCE</button>
+            </div>
+
+            <!-- Tab 1: Exact Count -->
+            <div id="stream-tab-exact" class="space-y-6">
+                <div class="hud-border bg-surface-dark/90 p-6 space-y-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/15 pb-2">Stream Processing Viewer</h3>
+                    
+                    <!-- Stream item flowing animation bar -->
+                    <div class="w-full h-16 border border-white/5 bg-onyx flex items-center justify-start p-4 overflow-hidden relative" id="stream-flow-container">
+                        <!-- Dynamic items list -->
+                        <div class="absolute top-1 left-2 text-[8px] font-mono text-on-surface/30">STREAM_FLOW_HUD</div>
+                        <div id="flow-items" class="flex gap-3 ml-12 items-center font-bold text-xs">
+                            <!-- Items appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Steps control bar -->
+                    <div class="w-full flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/5 pt-4">
+                        <div class="flex items-center gap-2">
+                            <button id="btn-prev" class="cyber-btn px-4 py-1.5 text-[10px] font-headline flex items-center gap-1" disabled>
+                                <span class="material-symbols-outlined text-[10px]">chevron_left</span> PREV
+                            </button>
+                            <button id="btn-play" class="cyber-btn-purple px-6 py-1.5 text-[10px] font-headline text-white flex items-center gap-1" disabled>
+                                <span id="play-icon" class="material-symbols-outlined text-[10px]">play_arrow</span> <span id="play-text">PLAY</span>
+                            </button>
+                            <button id="btn-next" class="cyber-btn px-4 py-1.5 text-[10px] font-headline flex items-center gap-1" disabled>
+                                NEXT <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                            </button>
+                        </div>
+                        <!-- Speed slider -->
+                        <div class="flex items-center gap-3 w-48">
+                            <span class="text-[9px] font-headline text-on-surface/50">SPEED</span>
+                            <input id="speed-slider" type="range" min="100" max="1500" value="500" step="100" class="w-full accent-cyber-purple bg-onyx cursor-pointer">
+                            <span class="text-[9px] font-mono text-cyber-cyan w-10 text-right" id="speed-val">500ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Panel -->
+                <div class="hud-border-purple bg-surface-dark/70 p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-cyber-purple/15 pb-2">
+                        <h4 class="font-headline text-xs text-cyber-cyan tracking-wider">EXACT FREQUENCY PROCESSING</h4>
+                        <div class="flex gap-4 font-mono text-[10px] text-on-surface/50">
+                            <span>POSITION: <span id="stat-pos" class="text-on-surface">0/0</span></span>
+                            <span>ITEM: <span id="stat-item" class="text-cyber-pink">-</span></span>
+                        </div>
+                    </div>
+                    <div id="exact-description" class="text-xs font-mono text-on-surface/80 leading-relaxed min-h-[40px]">
+                        Select parameters and press START_SIMULATION to view stream processing step-by-step.
+                    </div>
+                </div>
+
+                <!-- Exact Frequency Table -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Exact Frequencies So Far</h4>
+                    <div class="overflow-y-auto max-h-64">
+                        <table class="w-full text-xs font-mono text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                    <th class="py-2">Item</th>
+                                    <th class="py-2">Count</th>
+                                    <th class="py-2">Fraction</th>
+                                </tr>
+                            </thead>
+                            <tbody id="exact-table-body" class="divide-y divide-white/5">
+                                <tr><td colspan="3" class="py-3 text-center text-on-surface/40">No simulation data available.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Reservoir Sample -->
+            <div id="stream-tab-reservoir" class="hidden space-y-6">
+                <!-- Reservoir blocks display -->
+                <div class="hud-border bg-surface-dark/90 p-8 space-y-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/15 pb-2">Reservoir Sample Slots</h3>
+                    
+                    <div class="flex flex-wrap gap-4 items-center justify-center py-6" id="reservoir-slots-container">
+                        <!-- Slots generated in JS -->
+                    </div>
+
+                    <div id="reservoir-step-details" class="text-xs font-mono text-on-surface/70 bg-onyx/50 border border-white/5 p-4 rounded min-h-[48px]">
+                        Sample slots will populate based on stream processing.
+                    </div>
+                </div>
+
+                <!-- Step log -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Reservoir Step History (Last 15)</h4>
+                    <div id="reservoir-history-log" class="text-xs font-mono space-y-2 max-h-72 overflow-y-auto text-on-surface/60">
+                        <!-- Log steps in text format -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Count-Min Sketch -->
+            <div id="stream-tab-cms" class="hidden space-y-6">
+                <!-- Count-Min Sketch Heatmap -->
+                <div class="hud-border bg-surface-dark/90 p-6 space-y-6">
+                    <div class="flex justify-between items-center border-b border-cyber-cyan/15 pb-2">
+                        <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase">CMS Matrix Bucket Grid</h3>
+                        <span class="text-[9px] font-mono text-on-surface/40">COLUMNS (1 TO w)</span>
+                    </div>
+
+                    <div class="overflow-x-auto w-full py-4">
+                        <div id="cms-grid-container" class="flex flex-col gap-1.5 min-w-[500px]">
+                            <!-- Grid rows (depth d) and cols (width w) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CMS vs Exact Comparison -->
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider mb-4 border-b border-white/5 pb-2 uppercase">Exact vs Count-Min Sketch Estimation</h4>
+                    <div class="overflow-y-auto max-h-72">
+                        <table class="w-full text-xs font-mono text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                    <th class="py-2">Item</th>
+                                    <th class="py-2">Exact Count</th>
+                                    <th class="py-2">CMS Approx</th>
+                                    <th class="py-2">Error</th>
+                                    <th class="py-2">Overestimation %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cms-compare-body" class="divide-y divide-white/5">
+                                <tr><td colspan="5" class="py-3 text-center text-on-surface/40">No simulation data available.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Compare Scale -->
+            <div id="stream-tab-compare" class="hidden space-y-6">
+                <!-- Benchmark configurations -->
+                <div class="hud-border bg-surface-dark/80 p-6 space-y-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/15 pb-2">Massive Stream Benchmark (Zipfian skew)</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Stream Size (N)</label>
+                            <input id="comp-stream-n" type="number" min="100" max="20000" value="5000" class="cyber-input w-full p-2 text-xs">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-headline tracking-widest text-on-surface/60 block uppercase">Vocabulary Size (Skewed keys)</label>
+                            <input id="comp-vocab" type="number" min="10" max="1000" value="100" class="cyber-input w-full p-2 text-xs">
+                        </div>
+                    </div>
+
+                    <button id="btn-run-benchmark" class="cyber-btn w-full py-2.5 text-xs">RUN_SCALE_BENCHMARK.EXE</button>
+                </div>
+
+                <!-- Scale Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="hud-border bg-surface-dark/85 p-5">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Exact Counting Time</span>
+                        <div class="text-3xl font-headline font-black text-cyber-cyan mt-1" id="comp-time-exact">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple">O(N) memory allocation</span>
+                    </div>
+                    <div class="hud-border bg-surface-dark/85 p-5">
+                        <span class="text-[9px] font-headline text-on-surface/40 uppercase">Count-Min Sketch Time</span>
+                        <div class="text-3xl font-headline font-black text-cyber-pink mt-1" id="comp-time-cms">-</div>
+                        <span class="text-[8px] font-mono text-cyber-purple">O(w * d) fixed space bounds</span>
+                    </div>
+                </div>
+
+                <!-- Histogram Charts -->
+                <div class="hud-border bg-surface-dark/80 p-6 space-y-4">
+                    <h4 class="font-headline text-xs text-on-surface/70 tracking-wider border-b border-white/5 pb-2 uppercase">Distribution Comparison (Top 12 items)</h4>
+                    <div class="h-64 flex items-end justify-around gap-4 pb-2 border-b border-white/5" id="comp-bars-container">
+                        <!-- Chart generated in JS -->
+                        <div class="text-xs font-mono text-on-surface/40 w-full text-center py-20">Run benchmark to render comparison chart.</div>
+                    </div>
+                    <div class="flex justify-center gap-6 text-[10px] font-headline uppercase">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-cyber-cyan"></span>
+                            <span class="text-on-surface/60">Exact count</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-cyber-pink"></span>
+                            <span class="text-on-surface/60">CMS count</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Reference -->
+            <div id="stream-tab-reference" class="hidden space-y-6">
+                <div class="hud-border bg-surface-dark/80 p-6">
+                    <h3 class="font-headline text-xs text-cyber-cyan tracking-widest uppercase border-b border-cyber-cyan/15 pb-4 mb-4">Space and Error Guarantees</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs font-mono text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-cyber-purple/20 text-[10px] font-headline text-cyber-purple tracking-widest uppercase">
+                                    <th class="py-2">Algorithm</th>
+                                    <th class="py-2">Time Complexity</th>
+                                    <th class="py-2">Space Complexity</th>
+                                    <th class="py-2">Accuracy Guarantee</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Exact Count</td>
+                                    <td class="py-3">O(1) updates / queries</td>
+                                    <td class="py-3">O(Unique Keys)</td>
+                                    <td class="py-3">100% Accurate</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Reservoir Sampling</td>
+                                    <td class="py-3">O(1) amortized updates</td>
+                                    <td class="py-3">O(k) slots</td>
+                                    <td class="py-3">Uniform random sample</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-on-surface font-headline font-bold">Count-Min Sketch</td>
+                                    <td class="py-3">O(d) updates / queries</td>
+                                    <td class="py-3">O(w * d) fixed matrix</td>
+                                    <td class="py-3">Estimated count ≤ True count + ε·N</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="hud-border bg-surface-dark/80 p-6">
+                        <h4 class="font-headline text-sm text-cyber-cyan mb-2 uppercase">Count-Min Sketch Guarantees</h4>
+                        <p class="text-xs font-mono text-on-surface/75 leading-relaxed">
+                            Count-Min Sketch is a probabilistic data structure used to estimate frequencies. It uses a fixed size 2D matrix of counters of depth <strong>d</strong> and width <strong>w</strong>. It guarantees that estimated count does not exceed true count by more than <strong>&epsilon; &middot; N</strong> with probability at least <strong>1 - &delta;</strong>, where:
+                        </p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-xs font-mono text-on-surface/60">
+                            <li>&epsilon; (error margin) = <strong>e / w</strong></li>
+                            <li>&delta; (error probability) = <strong>e<sup>-d</sup></strong></li>
+                        </ul>
+                    </div>
+                    <div class="hud-border bg-surface-dark/80 p-6">
+                        <h4 class="font-headline text-sm text-cyber-cyan mb-2 uppercase">Reservoir Sampling Theorem</h4>
+                        <p class="text-xs font-mono text-on-surface/75 leading-relaxed">
+                            Reservoir sampling is an algorithm for choosing a simple random sample of size <strong>k</strong> from a stream of unknown or infinite length.
+                            For the <i>i</i>-th item in the stream:
+                        </p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-xs font-mono text-on-surface/60">
+                            <li>If <i>i &lt; k</i>, add directly to reservoir.</li>
+                            <li>If <i>i &ge; k</i>, generate a random index <i>j</i> in [0, i]. If <i>j &lt; k</i>, replace reservoir[<i>j</i>] with the item.</li>
+                            <li>At the end of stream, each item has an equal probability <strong>k / N</strong> of being in the final sample.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>UAIS — Unified Algorithm Intelligence System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=JetBrains+Mono:wght@300;400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "onyx": "#060608",
+                        "cyber-purple": "#bc13fe",
+                        "cyber-cyan": "#05ffa1",
+                        "cyber-pink": "#ff00e6",
+                        "surface-dark": "#0d0d12",
+                        "on-surface": "#e0e0ff",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "8px",
+                        "xl": "16px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Orbitron", "sans-serif"],
+                        "body": ["JetBrains Mono", "monospace"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="selection:bg-cyber-purple/40 font-mono">
+    <div class="scanline"></div>
+    <!-- Background Grid and Rotating Elements -->
+    <div class="fixed inset-0 pointer-events-none opacity-20 z-0">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-cyber-purple/30"></div>
+        <div class="absolute top-1/2 left-0 -translate-y-1/2 w-full h-px bg-cyber-purple/30"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-cyber-cyan/10 rounded-full" style="animation: spin 60s linear infinite;"></div>
+    </div>
+    
+    <!-- Top HUD Header -->
+    <header class="fixed top-0 inset-x-0 h-16 border-b border-cyber-purple/20 bg-onyx/80 backdrop-blur-xl z-50 flex items-center justify-between px-8">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="navigateTo('home')">
+            <div class="w-8 h-8 flex items-center justify-center bg-cyber-purple/10 border border-cyber-purple/40">
+                <span class="material-symbols-outlined text-cyber-purple text-xl">account_tree</span>
+            </div>
+            <span class="font-headline font-black text-xl tracking-tighter italic text-on-surface">ALGOVIS_PRO_v2.0</span>
+        </div>
+        <nav class="flex gap-8">
+            <a id="nav-home" class="text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1" href="#" onclick="navigateTo('home'); return false;">COMMAND_ROOT</a>
+            <a id="nav-simulations" class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#" onclick="toggleDropdown(event); return false;">SIMULATIONS</a>
+            <a id="nav-meta" class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#">META_DATA</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-[9px] font-bold text-cyber-purple tracking-widest uppercase">Operator</p>
+                <p class="text-xs font-headline">DR_ARIS_THORNE</p>
+            </div>
+            <img class="w-10 h-10 border border-cyber-cyan/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClQQBRJxw49UfWuSNNPRLw83yPrtARbOqVZ1GKaAZGm4ENyd5vin4CbFY9wHjD0FStONOEQ9-Yg_h3AwrbySUn_dMWThjcHRhn06JnuKxBFXnOJOMXU0yqUM8uIZOFYZAtMrTMqwwTyye9CrpHoI4Q8yI53VSZvk9nPTuGP_DeQpO3Y6oAJEZDIh4z1q7hP0yIymU_7uv07XEi-Wm0Qw46oKS0Lk4usSexENsGGCiqAE_Gq0QZJkXs"/>
+        </div>
+    </header>
+
+    <!-- Simulations Dropdown Menu -->
+    <div id="simulations-dropdown" class="hidden fixed top-16 left-1/2 -translate-x-1/2 w-64 bg-onyx/95 border border-cyber-purple/30 p-4 z-50 hud-border font-headline">
+        <ul class="space-y-2 text-xs">
+            <li><a class="block py-1 px-2 hover:bg-cyber-purple/20 text-on-surface hover:text-cyber-cyan transition-colors" href="#" onclick="navigateTo('sorting'); return false;">01_SORTING</a></li>
+            <li><a class="block py-1 px-2 hover:bg-cyber-purple/20 text-on-surface hover:text-cyber-cyan transition-colors" href="#" onclick="navigateTo('searching'); return false;">02_SEARCHING</a></li>
+            <li><a class="block py-1 px-2 hover:bg-cyber-purple/20 text-on-surface hover:text-cyber-cyan transition-colors" href="#" onclick="navigateTo('paradigms'); return false;">03_PARADIGMS</a></li>
+            <li><a class="block py-1 px-2 hover:bg-cyber-purple/20 text-on-surface hover:text-cyber-cyan transition-colors" href="#" onclick="navigateTo('strings'); return false;">04_STRINGS</a></li>
+            <li><a class="block py-1 px-2 hover:bg-cyber-purple/20 text-on-surface hover:text-cyber-cyan transition-colors" href="#" onclick="navigateTo('graph'); return false;">05_GRAPH_THEORY</a></li>
+            <li><a class="block py-1 px-2 hover:bg-cyber-purple/20 text-on-surface hover:text-cyber-cyan transition-colors" href="#" onclick="navigateTo('streaming'); return false;">06_STREAMING</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex min-h-screen pt-16 relative z-10">
+        <!-- Sidebar Navigation (only visible/layout-relevant on module pages) -->
+        <aside id="app-sidebar" class="hidden w-64 border-r border-cyber-purple/20 bg-surface-dark/90 backdrop-blur-md p-6 flex flex-col justify-between shrink-0">
+            <div>
+                <h2 class="font-headline font-black text-md text-cyber-purple tracking-widest mb-6">DOMAINS</h2>
+                <nav class="space-y-2">
+                    <a id="side-sorting" class="flex items-center gap-3 py-2 px-3 border border-transparent text-xs hover:border-cyber-purple/40 text-on-surface/60 hover:text-on-surface transition-all" href="#" onclick="navigateTo('sorting'); return false;">
+                        <span class="material-symbols-outlined text-sm">sort</span> SORTING
+                    </a>
+                    <a id="side-searching" class="flex items-center gap-3 py-2 px-3 border border-transparent text-xs hover:border-cyber-purple/40 text-on-surface/60 hover:text-on-surface transition-all" href="#" onclick="navigateTo('searching'); return false;">
+                        <span class="material-symbols-outlined text-sm">search</span> SEARCHING
+                    </a>
+                    <a id="side-paradigms" class="flex items-center gap-3 py-2 px-3 border border-transparent text-xs hover:border-cyber-purple/40 text-on-surface/60 hover:text-on-surface transition-all" href="#" onclick="navigateTo('paradigms'); return false;">
+                        <span class="material-symbols-outlined text-sm">category</span> PARADIGMS
+                    </a>
+                    <a id="side-strings" class="flex items-center gap-3 py-2 px-3 border border-transparent text-xs hover:border-cyber-purple/40 text-on-surface/60 hover:text-on-surface transition-all" href="#" onclick="navigateTo('strings'); return false;">
+                        <span class="material-symbols-outlined text-sm">text_fields</span> STRINGS
+                    </a>
+                    <a id="side-graph" class="flex items-center gap-3 py-2 px-3 border border-transparent text-xs hover:border-cyber-purple/40 text-on-surface/60 hover:text-on-surface transition-all" href="#" onclick="navigateTo('graph'); return false;">
+                        <span class="material-symbols-outlined text-sm">hub</span> GRAPH THEORY
+                    </a>
+                    <a id="side-streaming" class="flex items-center gap-3 py-2 px-3 border border-transparent text-xs hover:border-cyber-purple/40 text-on-surface/60 hover:text-on-surface transition-all" href="#" onclick="navigateTo('streaming'); return false;">
+                        <span class="material-symbols-outlined text-sm">waves</span> STREAMING
+                    </a>
+                </nav>
+            </div>
+            <div class="border-t border-cyber-purple/20 pt-4 text-[10px] text-on-surface/40 text-center font-mono">
+                DAA MINI PROJECT
+            </div>
+        </aside>
+
+        <!-- Main View Container -->
+        <main id="app-content" class="flex-grow p-10 max-w-full">
+            <!-- Dynamically injected views go here -->
+        </main>
+    </div>
+
+    <!-- HUD Footer -->
+    <footer class="fixed bottom-0 inset-x-0 h-10 border-t border-cyber-purple/20 bg-onyx/90 backdrop-blur-xl z-50 flex items-center justify-between px-8">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 font-mono text-[10px] text-on-surface/50">
+                <span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1] rounded-full animate-pulse"></span>
+                <span>SYS_STATUS: CORE_STABLE</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 font-mono text-[10px] text-on-surface/50">
+                <span class="material-symbols-outlined text-xs">schedule</span>
+                <span id="time-display">T_STAMP: 00:00:00_UTC</span>
+            </div>
+            <div class="h-8 w-px bg-white/10"></div>
+            <div class="text-[9px] font-headline text-on-surface/30">ENCRYPTED_HUD_v2.0.4</div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="router.js"></script>
+</body>
+</html>

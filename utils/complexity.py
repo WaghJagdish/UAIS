@@ -36,7 +36,7 @@ def sort_complexity_table() -> list[dict]:
             "Average Case": meta["time_avg"],
             "Worst Case": meta["time_worst"],
             "Space": meta["space"],
-            "Stable": "✅" if meta["stable"] else "❌",
+            "Stable": "Yes" if meta["stable"] else "No",
         })
     return rows
 

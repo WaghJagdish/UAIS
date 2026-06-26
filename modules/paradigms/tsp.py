@@ -54,15 +54,16 @@ def tsp_dp(dist_matrix: list, node_names: list = None) -> dict:
 
     # Reconstruct path
     path = []
-    mask = FULL
-    cur = last
-    while cur != -1:
-        path.append(cur)
-        prev = parent[mask][cur]
-        mask ^= (1 << cur)
-        cur = prev
-    path.append(0)
-    path.reverse()
+    if last != -1:
+        mask = FULL
+        cur = last
+        while cur != -1:
+            path.append(cur)
+            prev = parent[mask][cur]
+            mask ^= (1 << cur)
+            cur = prev
+        path.append(0)
+        path.reverse()
 
     if node_names:
         path_named = [node_names[i] for i in path]

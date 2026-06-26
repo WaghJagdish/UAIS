@@ -65,11 +65,3 @@ def operations_bar_chart(ops: dict, title: str = "Operations / Steps Comparison"
     return fig
 
 
-def dark_layout(fig: go.Figure) -> go.Figure:
-    """Apply dark theme to any Plotly figure."""
-    fig.update_layout(
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        font=dict(color="#ECF0F1", family="Inter, sans-serif"),
-    )
-    return fig

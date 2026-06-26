@@ -13,6 +13,7 @@ from modules.streaming.streaming_algorithms import (
 )
 from modules.streaming.streaming_visualizer import frequency_bar, reservoir_chart, sketch_heatmap
 from utils.constants import STREAMING_ALGORITHMS
+from utils.ui_components import page_header, control_panel, error_boundary, recommendation_box
 
 
 _SAMPLE_STREAMS = {
@@ -22,36 +23,30 @@ _SAMPLE_STREAMS = {
 }
 
 
+@error_boundary("Streaming")
 def render():
-    st.markdown("""
-    <h1 style='text-align:center;background:linear-gradient(135deg,#fddb92,#d1fdff);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.4rem;'>
-    📡 Streaming Algorithm Visualizer</h1>
-    <p style='text-align:center;color:#95A5A6;'>
-    Exact vs Approximate frequency estimation in data streams.</p>
-    """, unsafe_allow_html=True)
+    page_header(
+        "Streaming Algorithm Visualizer",
+        "Exact vs Approximate frequency estimation in data streams.",
+        "streaming"
+    )
 
-    st.markdown("""
-    <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
-        <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Visualization Controls</h4>
-    """, unsafe_allow_html=True)
-    
-    col_a, col_b, col_c = st.columns(3)
-    stream_preset = col_a.selectbox("Sample stream", list(_SAMPLE_STREAMS.keys()))
-    stream = _SAMPLE_STREAMS[stream_preset]
-    col_a.markdown(f"**Stream length:** {len(stream)}")
+    with control_panel("Visualization Controls"):
+        col_a, col_b, col_c = st.columns(3)
+        stream_preset = col_a.selectbox("Sample stream", list(_SAMPLE_STREAMS.keys()))
+        stream = _SAMPLE_STREAMS[stream_preset]
+        col_a.markdown(f"**Stream length:** {len(stream)}")
 
-    sample_k = col_b.slider("Reservoir size (k)", 2, min(20, len(stream)), 5)
-    cms_width = col_c.slider("CMS width (w)", 5, 50, 20)
-    cms_depth = col_c.slider("CMS depth (d)", 2, 6, 3)
-    explain_mode = col_b.toggle("📖 Explain Mode", value=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+        sample_k = col_b.slider("Reservoir size (k)", 2, min(20, len(stream)), 5)
+        cms_width = col_c.slider("CMS width (w)", 5, 50, 20)
+        cms_depth = col_c.slider("CMS depth (d)", 2, 6, 3)
+        explain_mode = col_b.toggle("Explain Mode", value=True)
 
     st.markdown(f"**Stream preview:** `{stream[:20]}{'...' if len(stream)>20 else ''}`")
     st.divider()
 
     tab_exact, tab_reservoir, tab_cms, tab_compare, tab_ref = st.tabs(
-        ["🔢 Exact Count", "🎲 Reservoir Sample", "🎭 Count-Min Sketch", "📊 Compare", "📚 Reference"]
+        ["Exact Count", "Reservoir Sample", "Count-Min Sketch", "Compare", "Reference"]
     )
 
     # ── Exact ─────────────────────────────────────────────────────────────────
@@ -75,8 +70,8 @@ def render():
     with tab_reservoir:
         st.markdown(f"**Reservoir Sampling** — uniform sample of size k={sample_k} from stream.")
         res_rsv = reservoir_sample(stream, sample_k)
-        st.success(f"📦 Sample ({sample_k} items): `{res_rsv['sample']}`")
-        st.plotly_chart(reservoir_chart(stream, res_rsv["sample"]), use_container_width=True)
+        st.success(f"Sample ({sample_k} items): `{res_rsv['sample']}`")
+        st.plotly_chart(reservoir_chart(stream, res_rsv["sample"]), use_container_width=True, key="stream_reservoir_chart")
 
         if explain_mode:
             st.markdown("**Steps (first 15):**")
@@ -88,7 +83,7 @@ def render():
     with tab_cms:
         st.markdown(f"**Count-Min Sketch** — w={cms_width}, d={cms_depth}")
         res_cms = count_min_sketch_stream(stream, cms_width, cms_depth)
-        st.plotly_chart(sketch_heatmap(res_cms["sketch_table"]), use_container_width=True)
+        st.plotly_chart(sketch_heatmap(res_cms["sketch_table"]), use_container_width=True, key="stream_cms_heatmap")
 
         exact = res_exact["frequencies"]
         approx = res_cms["approx_frequencies"]
@@ -102,18 +97,18 @@ def render():
 
     # ── Compare ───────────────────────────────────────────────────────────────
     with tab_compare:
-        st.markdown("""
-        <div style='background:rgba(26,31,46,0.6);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);margin-bottom:1rem;'>
-            <h4 style='margin-top:0;color:#e2e8f0;'>⚙️ Benchmark Configuration</h4>
-            <p style='color:#94a3b8;font-size:0.9rem;'>Configure a massive stream size to test Count-Min Sketch approximation against exact counting. (Max 50,000 items)</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        c_col1, c_col2 = st.columns(2)
-        comp_stream_n = c_col1.number_input("Large Stream Size", min_value=100, max_value=50000, value=10000, step=1000, key="comp_stream_n")
-        comp_vocab = c_col2.number_input("Vocabulary Size (Unique items)", min_value=10, max_value=10000, value=500, step=10, key="comp_vocab")
-        
-        if st.button("🚀 Run Scale Comparison", type="primary", key="run_stream_comp"):
+        with control_panel("Benchmark Configuration"):
+            st.markdown(
+                "<p style='color:#94a3b8;font-size:0.9rem;margin:0;'>"
+                "Configure a massive stream size to test Count-Min Sketch approximation against exact counting. (Max 50,000 items)</p>",
+                unsafe_allow_html=True
+            )
+            
+            c_col1, c_col2 = st.columns(2)
+            comp_stream_n = c_col1.number_input("Large Stream Size", min_value=100, max_value=50000, value=10000, step=1000, key="comp_stream_n")
+            comp_vocab = c_col2.number_input("Vocabulary Size (Unique items)", min_value=10, max_value=10000, value=500, step=10, key="comp_vocab")
+            
+        if st.button("Run Scale Comparison", type="primary", key="run_stream_comp"):
             # Generate stream with skewed distribution (Zipfian-like) to test CMS better
             with st.spinner("Generating stream and running benchmarks..."):
                 rng = random.Random(42)
@@ -147,14 +142,14 @@ def render():
             # Align keys
             all_keys = set(str(k) for k in exact_f) | set(str(k) for k in approx_f)
             exact_aligned  = {str(k): exact_f.get(k, exact_f.get(str(k), 0)) for k in all_keys}
-            approx_aligned = {str(k): approx_f.get(k, approx_f.get(int(k) if str(k).isdigit() else k, 0)) for k in all_keys}
+            approx_aligned = {str(k): approx_f.get(k, 0) for k in all_keys}
 
             st.plotly_chart(frequency_bar(exact_aligned, approx_aligned,
-                                          "Exact Count vs Count-Min Sketch (Top Items)"), use_container_width=True)
+                                          "Exact Count vs Count-Min Sketch (Top Items)"), use_container_width=True, key="stream_compare_chart")
 
             c1, c2 = st.columns(2)
-            c1.metric("⏱️ Exact Count Time", f"{time_exact*1000:.2f} ms")
-            c2.metric("⏱️ CMS Time", f"{time_cms*1000:.2f} ms")
+            c1.metric("Exact Count Time", f"{time_exact*1000:.2f} ms")
+            c2.metric("CMS Time", f"{time_cms*1000:.2f} ms")
 
             st.markdown("""
             | Property | Exact Count | Reservoir Sample | Count-Min Sketch |
@@ -163,7 +158,7 @@ def render():
             | Error | 0% | N/A (random sample) | ε over |
             | Accuracy | 100% | Proportional | Probabilistic |
             """)
-            st.success("🏆 **Use Case Guide:** Exact count when memory is unlimited; CMS for massive streams; Reservoir for random sampling without repetition.")
+            recommendation_box("**Use Case Guide:** Exact count when memory is unlimited; CMS for massive streams; Reservoir for random sampling without repetition.")
 
     # ── Reference ─────────────────────────────────────────────────────────────
     with tab_ref:

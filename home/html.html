@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AlgoVis Pro | HUD Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=JetBrains+Mono:wght@300;400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "onyx": "#060608",
+                        "cyber-purple": "#bc13fe",
+                        "cyber-cyan": "#05ffa1",
+                        "cyber-pink": "#ff00e6",
+                        "surface-dark": "#0d0d12",
+                        "on-surface": "#e0e0ff",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "8px",
+                        "xl": "16px",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Orbitron", "sans-serif"],
+                        "body": ["JetBrains Mono", "monospace"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #060608;
+            color: #e0e0ff;
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: hidden;
+        }
+        
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 99;
+            background: linear-gradient(0deg, rgba(188, 19, 254, 0) 0%, rgba(188, 19, 254, 0.1) 50%, rgba(188, 19, 254, 0) 100%);
+            opacity: 0.1;
+            position: fixed;
+            bottom: 100%;
+            pointer-events: none;
+            animation: scanline 6s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100px; }
+        }
+
+        .hud-border {
+            border: 1px solid rgba(5, 255, 161, 0.2);
+            position: relative;
+        }
+        .hud-border::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 10px; height: 10px;
+            border-top: 2px solid #05ffa1;
+            border-left: 2px solid #05ffa1;
+        }
+        .hud-border::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 10px; height: 10px;
+            border-bottom: 2px solid #05ffa1;
+            border-right: 2px solid #05ffa1;
+        }
+
+        .glow-text-cyan {
+            text-shadow: 0 0 10px rgba(5, 255, 161, 0.5);
+        }
+        .glow-text-purple {
+            text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+        }
+
+        .hexagon-nav {
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        }
+
+        .data-stream {
+            mask-image: linear-gradient(to bottom, transparent, black, transparent);
+        }
+
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 5px rgba(5, 255, 161, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(5, 255, 161, 0.6); }
+        }
+        .active-node {
+            animation: pulse-cyan 2s infinite;
+        }
+
+        /* Custom Scrollbar for HUD */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #060608; }
+        ::-webkit-scrollbar-thumb { background: #bc13fe; border-radius: 2px; }
+    </style>
+</head>
+<body class="selection:bg-cyber-purple/40">
+<div class="scanline"></div>
+<!-- Background Elements -->
+<div class="fixed inset-0 pointer-events-none opacity-20">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-cyber-purple/30"></div>
+<div class="absolute top-1/2 left-0 -translate-y-1/2 w-full h-px bg-cyber-purple/30"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-cyber-cyan/10 rounded-full animate-spin-slow" style="animation: spin 60s linear infinite;"></div>
+</div>
+<!-- HUD Overlay Top -->
+<header class="fixed top-0 inset-x-0 h-16 border-b border-cyber-purple/20 bg-onyx/80 backdrop-blur-xl z-50 flex items-center justify-between px-8">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 flex items-center justify-center bg-cyber-purple/10 border border-cyber-purple/40">
+<span class="material-symbols-outlined text-cyber-purple text-xl">account_tree</span>
+</div>
+<span class="font-headline font-black text-xl tracking-tighter italic">ALGOVIS_PRO_v2.0</span>
+</div>
+<nav class="flex gap-8">
+<a class="text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1" href="#">COMMAND_ROOT</a>
+<a class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#">SYS_LOGS</a>
+<a class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#">META_DATA</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<p class="text-[9px] font-bold text-cyber-purple tracking-widest uppercase">Operator</p>
+<p class="text-xs font-headline">DR_ARIS_THORNE</p>
+</div>
+<img class="w-10 h-10 border border-cyber-cyan/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClQQBRJxw49UfWuSNNPRLw83yPrtARbOqVZ1GKaAZGm4ENyd5vin4CbFY9wHjD0FStONOEQ9-Yg_h3AwrbySUn_dMWThjcHRhn06JnuKxBFXnOJOMXU0yqUM8uIZOFYZAtMrTMqwwTyye9CrpHoI4Q8yI53VSZvk9nPTuGP_DeQpO3Y6oAJEZDIh4z1q7hP0yIymU_7uv07XEi-Wm0Qw46oKS0Lk4usSexENsGGCiqAE_Gq0QZJkXs"/>
+</div>
+</header>
+<main class="pt-24 pb-32 px-8 max-w-[1600px] mx-auto relative">
+<!-- Hero Section HUD -->
+<section class="mb-20 grid grid-cols-12 gap-8">
+<div class="col-span-12 lg:col-span-8 hud-border bg-surface-dark/60 p-12 backdrop-blur-md">
+<div class="flex items-center gap-3 text-cyber-cyan mb-6">
+<span class="material-symbols-outlined text-sm animate-pulse">terminal</span>
+<span class="text-[10px] font-bold tracking-[0.5em] uppercase">SYSTEM INITIALIZATION COMPLETE // CORE_STABLE</span>
+</div>
+<h2 class="text-6xl font-headline font-black mb-8 leading-none tracking-tighter">
+                    UNIFIED ALGORITHM<br/>
+<span class="text-cyber-purple glow-text-purple">INTELLIGENCE SYSTEM</span>
+</h2>
+<p class="text-lg text-on-surface/70 max-w-2xl font-mono leading-relaxed border-l-2 border-cyber-purple/30 pl-6">
+                    A high-fidelity visualization environment designed for analytical rigor. Analyze spatial complexity, temporal execution, and data flow patterns across six distinct computational categories.
+                </p>
+</div>
+</section>
+<!-- Centered Hexagonal Command Center Navigation -->
+<section class="mb-32">
+<div class="text-center mb-16">
+<h3 class="text-3xl font-headline italic inline-block border-x border-cyber-cyan/30 px-12 py-2">EXECUTION_DOMAINS</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Sorting -->
+<div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+<div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">01</div>
+<span class="material-symbols-outlined text-cyber-cyan mb-4">sort</span>
+<h4 class="text-xl font-headline mb-4 tracking-wider">SORTING</h4>
+<ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> QUICK SORT</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> MERGE SORT</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> HEAP SORT</li>
+</ul>
+<a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#">LAUNCH_SIM.EXE</a>
+</div>
+<!-- Searching -->
+<div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20 active-node">
+<div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">02</div>
+<span class="material-symbols-outlined text-cyber-cyan mb-4">search</span>
+<h4 class="text-xl font-headline mb-4 tracking-wider">SEARCHING</h4>
+<ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BINARY SEARCH</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BFS / DFS</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> A* NAVIGATION</li>
+</ul>
+<a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#">LAUNCH_SIM.EXE</a>
+</div>
+<!-- Paradigms -->
+<div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+<div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">03</div>
+<span class="material-symbols-outlined text-cyber-cyan mb-4">category</span>
+<h4 class="text-xl font-headline mb-4 tracking-wider">PARADIGMS</h4>
+<ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> DYNAMIC PROG</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> GREEDY STRATEGY</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BACKTRACKING</li>
+</ul>
+<a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#">LAUNCH_SIM.EXE</a>
+</div>
+<!-- Strings -->
+<div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+<div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">04</div>
+<span class="material-symbols-outlined text-cyber-cyan mb-4">text_fields</span>
+<h4 class="text-xl font-headline mb-4 tracking-wider">STRINGS</h4>
+<ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> KMP PATTERN</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> RABIN-KARP</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> Z-ALGORITHM</li>
+</ul>
+<a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#">LAUNCH_SIM.EXE</a>
+</div>
+<!-- Graph Theory -->
+<div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+<div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">05</div>
+<span class="material-symbols-outlined text-cyber-cyan mb-4">hub</span>
+<h4 class="text-xl font-headline mb-4 tracking-wider">GRAPH THEORY</h4>
+<ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> DIJKSTRA'S</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> KRUSKAL'S MST</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BELLMAN-FORD</li>
+</ul>
+<a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#">LAUNCH_SIM.EXE</a>
+</div>
+<!-- Streaming -->
+<div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+<div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">06</div>
+<span class="material-symbols-outlined text-cyber-cyan mb-4">waves</span>
+<h4 class="text-xl font-headline mb-4 tracking-wider">STREAMING</h4>
+<ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> COUNT-MIN SKETCH</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> HYPERLOGLOG</li>
+<li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> RESERVOIR SAMPLE</li>
+</ul>
+<a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#">LAUNCH_SIM.EXE</a>
+</div>
+</div>
+</section>
+<!-- Contributors Section -->
+<section class="border-t border-cyber-purple/20 pt-20">
+<div class="flex items-end justify-between mb-16">
+<div>
+<h3 class="text-5xl font-headline font-black mb-2">PROJECT_CONTRIBUTORS</h3>
+<p class="text-cyber-purple font-mono italic">The academic collective behind AlgoVis Pro // AUTHORIZED_PERSONNEL_ONLY</p>
+</div>
+<button class="hud-border bg-white/5 px-8 py-4 text-[10px] font-headline tracking-widest hover:bg-cyber-purple hover:text-white transition-all">DIRECTORY.DB</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl">
+<!-- Member 1 -->
+<div class="group">
+<div class="hud-border relative overflow-hidden mb-6 aspect-[4/5] bg-surface-dark grayscale group-hover:grayscale-0 transition-all duration-700">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all scale-110 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXkfP9d6hrFnuKj_tf1mplfnCeiBrxLuSkNuDOwhuOAaJD3Uguzhzyp3H7cgKkfZwD1sw4iv7ZemIE5TnS1ZmilSF0ykMKtFkYKqnubE5gLyI66mMURd5yQb4qebbwSku9NsqYAdAErcOA65-zDtFBE5qoY5S_ir0CXlBOWyRxAtKS8qPEetg30Ro2peeajwMZAWLwwOARDB6D3-Tivdq1OzkCQgMX9nxJ7dvDVdKc_u88AoVFNcQBjCPIXomNJa1TrQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx via-transparent to-transparent opacity-80"></div>
+<div class="absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform">
+<p class="text-[10px] text-cyber-cyan font-headline">LVL_4_DEV</p>
+</div>
+</div>
+<p class="text-2xl font-headline text-on-surface">Sarah Chen</p>
+<p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-2 uppercase">Lead Developer</p>
+<p class="text-xs text-on-surface/50 italic font-mono">Optimization Specialist</p>
+</div>
+<!-- Member 2 -->
+<div class="group">
+<div class="hud-border relative overflow-hidden mb-6 aspect-[4/5] bg-surface-dark grayscale group-hover:grayscale-0 transition-all duration-700">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all scale-110 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLU6A5jbcahSQ0-0Z2S-WlADtrAi0xcR2xNvnJY67EU5HlV_RfgwV5Ivuva5qNxdmZOm5RG798eVR3OaKLOZX4YI0qZqjUxh0Sb_6Esa0cJWP2OJiycbx0OdF1fgLUOnhbHua5S5m09El7DPrfIHwIc5i4DX8jZxITdyg9dV9gt28nLEXFdtnM8mLh-8WFMpLDkPM9CNYYN8zYwp6IlFLpvZeaNSOv3g2KY1jl94fRqt1gF_noS82oYWlqAlmevdx3yQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx via-transparent to-transparent opacity-80"></div>
+<div class="absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform">
+<p class="text-[10px] text-cyber-cyan font-headline">RES_CHIEF</p>
+</div>
+</div>
+<p class="text-2xl font-headline text-on-surface">Dr. Marcus Vane</p>
+<p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-2 uppercase">Algorithm Researcher</p>
+<p class="text-xs text-on-surface/50 italic font-mono">Graph Theory Expert</p>
+</div>
+</div>
+</section>
+</main>
+<!-- HUD Stats Footer -->
+<footer class="fixed bottom-0 inset-x-0 bg-onyx border-t border-cyber-cyan/30 py-4 px-8 flex justify-between items-center z-50">
+<div class="flex gap-12">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-cyber-cyan animate-pulse"></div>
+<span class="text-[9px] font-headline tracking-widest text-on-surface/40 uppercase">ACTIVE_SIMS:</span>
+<span class="text-xs font-headline text-cyber-cyan">128_NODES</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-cyber-purple"></div>
+<span class="text-[9px] font-headline tracking-widest text-on-surface/40 uppercase">SYNC_STATE:</span>
+<span class="text-xs font-headline text-cyber-purple">STABLE</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 font-mono text-[10px] text-on-surface/50">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="" id="time-display">T_STAMP: 08:43:55_UTC</span>
+</div>
+<div class="h-8 w-px bg-white/10"></div>
+<div class="text-[9px] font-headline text-on-surface/30">ENCRYPTED_HUD_v2.0.4</div>
+</div>
+</footer>
+<script>
+        // Update the futuristic timestamp
+        setInterval(() => {
+            const timeEl = document.getElementById('time-display');
+            const now = new Date();
+            const timeStr = `T_STAMP: ${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:${now.getUTCSeconds().toString().padStart(2, '0')}_UTC`;
+            if(timeEl) timeEl.textContent = timeStr;
+        }, 1000);
+    </script>
+</body></html>

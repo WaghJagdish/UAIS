@@ -106,7 +106,7 @@ def knapsack_branch_bound(weights: list, values: list, capacity: int) -> dict:
         nodes_explored[0] += 1
         if cur_w > capacity:
             return
-        if idx == n or cur_v + upper_bound(idx, cur_w, cur_v) <= best_val[0]:
+        if idx == n or upper_bound(idx, cur_w, cur_v) <= best_val[0]:
             if cur_v > best_val[0]:
                 best_val[0] = cur_v
                 best_sel[0] = list(sel)

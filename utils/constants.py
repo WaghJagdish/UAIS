@@ -4,17 +4,17 @@ Global constants for the UAIS application.
 """
 
 # ── Colour palette ────────────────────────────────────────────────────────────
-COLOR_DEFAULT   = "#4A90D9"   # default bar / node
-COLOR_COMPARE   = "#E74C3C"   # red  – elements being compared
-COLOR_ACTIVE    = "#F39C12"   # yellow – currently considered
-COLOR_SORTED    = "#2ECC71"   # green – finalized / selected
-COLOR_PIVOT     = "#9B59B6"   # purple – pivot element
-COLOR_FOUND     = "#1ABC9C"   # teal – element found
-COLOR_PATH      = "#E67E22"   # orange – shortest path edge
-COLOR_MST       = "#27AE60"   # dark-green – MST edge
-COLOR_BG        = "#0E1117"   # dark background (matches Streamlit dark)
-COLOR_CARD      = "#1A1F2E"   # card background
-COLOR_TEXT      = "#ECF0F1"   # primary text
+COLOR_DEFAULT   = "#31394d"   # default bar / node (slate gray)
+COLOR_COMPARE   = "#89ceff"   # sky blue – elements being compared
+COLOR_ACTIVE    = "#c3c0ff"   # lavender – currently considered
+COLOR_SORTED    = "#4edea3"   # neon green – finalized / selected
+COLOR_PIVOT     = "#bc13fe"   # cyber purple – pivot element
+COLOR_FOUND     = "#05ffa1"   # neon cyan – element found
+COLOR_PATH      = "#05ffa1"   # neon cyan – shortest path edge
+COLOR_MST       = "#4edea3"   # neon green – MST edge
+COLOR_BG        = "#0b1326"   # deep-space dark navy background
+COLOR_CARD      = "#171f33"   # surface-container dark navy
+COLOR_TEXT      = "#dbe2fd"   # on-surface light lavender
 
 # ── Algorithm metadata registry ───────────────────────────────────────────────
 SORTING_ALGORITHMS = {
@@ -76,11 +76,11 @@ STREAMING_ALGORITHMS = {
 
 # ── Streamlit page titles ─────────────────────────────────────────────────────
 PAGE_TITLES = {
-    "home":     "🏠 Home — UAIS",
-    "sorting":  "🔀 Sorting Algorithms",
-    "searching":"🔍 Searching Algorithms",
-    "paradigms":"🧩 Algorithm Paradigms",
-    "strings":  "📝 String Matching",
-    "graph":    "🕸️ Graph Algorithms",
-    "streaming":"📡 Streaming Algorithms",
+    "home":     "Home — UAIS",
+    "sorting":  "Sorting Algorithms",
+    "searching":"Searching Algorithms",
+    "paradigms":"Algorithm Paradigms",
+    "strings":  "String Matching",
+    "graph":    "Graph Algorithms",
+    "streaming":"Streaming Algorithms",
 }
