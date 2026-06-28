@@ -1,10 +1,20 @@
 /* style.css */
 
+html {
+    font-size: 17.5px; /* scaled up from 16px to increase standard tailwind sizes */
+}
+
 body {
     background-color: #060608;
     color: #e0e0ff;
     overflow-x: hidden;
 }
+
+/* Arbitrary font-size overrides for larger typography */
+.text-\[8px\] { font-size: 10px !important; }
+.text-\[9px\] { font-size: 11px !important; }
+.text-\[10px\] { font-size: 12px !important; }
+.text-\[11px\] { font-size: 13.5px !important; }
 
 /* Scanline Effect */
 .scanline {
