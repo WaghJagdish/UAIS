@@ -592,12 +592,19 @@ function runStringBenchmark() {
     };
 
     for (const [name, fn] of Object.entries(algos)) {
-        const t0 = performance.now();
+        // Run once to get comparisons and matches count
         const outcome = fn(text, pattern);
+        
+        // Run 1000 times to get a stable average time
+        const iterations = 1000;
+        const t0 = performance.now();
+        for (let k = 0; k < iterations; k++) {
+            fn(text, pattern);
+        }
         const t1 = performance.now();
         
         results[name] = {
-            time: t1 - t0,
+            time: (t1 - t0) / iterations,
             comparisons: outcome.comparisons,
             matches: outcome.matches.length
         };
