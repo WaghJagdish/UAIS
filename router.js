@@ -1,6 +1,45 @@
 // router.js
 
+// ── Timer Registry & Wrappers (Professional cleanup system) ────────────────
+const nativeSetInterval = window.setInterval;
+const nativeClearInterval = window.clearInterval;
+const nativeSetTimeout = window.setTimeout;
+const nativeClearTimeout = window.clearTimeout;
+
+const activeIntervals = new Set();
+const activeTimeouts = new Set();
+
+window.setInterval = function(callback, delay, ...args) {
+    const id = nativeSetInterval(callback, delay, ...args);
+    activeIntervals.add(id);
+    return id;
+};
+
+window.clearInterval = function(id) {
+    nativeClearInterval(id);
+    activeIntervals.delete(id);
+};
+
+window.setTimeout = function(callback, delay, ...args) {
+    const id = nativeSetTimeout(callback, delay, ...args);
+    activeTimeouts.add(id);
+    return id;
+};
+
+window.clearTimeout = function(id) {
+    nativeClearTimeout(id);
+    activeTimeouts.delete(id);
+};
+
+window.clearAllPageTimers = function() {
+    activeIntervals.forEach(id => nativeClearInterval(id));
+    activeIntervals.clear();
+    activeTimeouts.forEach(id => nativeClearTimeout(id));
+    activeTimeouts.clear();
+};
+
 // Page keys mapping
+
 const PAGES = {
     'home': 'modules/home.html',
     'sorting': 'modules/sorting.html',
@@ -58,10 +97,8 @@ function navigateTo(page) {
 // Load and render view
 async function loadView(page) {
     // Clear all active intervals and timeouts from previous page scripts to prevent leakage
-    for (let i = 1; i < 9999; i++) {
-        window.clearInterval(i);
-        window.clearTimeout(i);
-    }
+    window.clearAllPageTimers();
+
 
     const contentArea = document.getElementById('app-content');
     const sidebar = document.getElementById('app-sidebar');
@@ -160,7 +197,7 @@ function loadModuleScript(page) {
 
 // Sync clock in UTC
 function startHUDClock() {
-    setInterval(() => {
+    nativeSetInterval(() => {
         const timeEl = document.getElementById('time-display');
         const now = new Date();
         const timeStr = `T_STAMP: ${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:${now.getUTCSeconds().toString().padStart(2, '0')}_UTC`;
