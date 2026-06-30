@@ -1,0 +1,117 @@
+<!-- modules/tests.html -->
+<div class="space-y-6 max-w-4xl mx-auto pb-12">
+    <!-- Page Header -->
+    <div class="hud-border p-6 bg-surface-dark/95 border-cyber-purple/30 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-cyber-purple/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 bg-cyber-purple animate-ping rounded-full"></span>
+                    <span class="text-[10px] font-headline tracking-[0.3em] text-cyber-purple">DIAGNOSTIC_SUITE</span>
+                </div>
+                <h1 class="text-2xl font-headline font-black tracking-tight text-on-surface">SYSTEM_INTEGRITY_CHECK</h1>
+                <p class="text-xs text-on-surface/50 font-mono mt-1">Execute client-side unit tests to verify algorithm accuracy, routing sanity, and component state logic.</p>
+            </div>
+            <button id="run-tests-btn" class="cyber-btn bg-cyber-purple/20 border-cyber-purple hover:bg-cyber-purple/40 hover:text-white px-6 py-2.5 font-headline text-xs tracking-wider flex items-center gap-2 transition-all">
+                <span class="material-symbols-outlined text-sm animate-spin-slow">sync</span> RUN_DIAGNOSTICS
+            </button>
+        </div>
+    </div>
+
+    <!-- Diagnostic Summary Status -->
+    <div id="test-summary" class="hidden hud-border p-4 bg-onyx/80 border-on-surface/10 font-mono text-xs space-y-2">
+        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+            <span class="text-on-surface/50">TEST_RUN_STATUS:</span>
+            <span id="suite-status-text" class="text-cyber-cyan font-bold tracking-wider">INITIALIZED</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+            <div>
+                <span class="text-on-surface/40 block text-[10px]">TOTAL TESTS</span>
+                <span id="test-total-count" class="text-lg font-bold text-on-surface">0</span>
+            </div>
+            <div>
+                <span class="text-cyber-cyan block text-[10px]">PASSED</span>
+                <span id="test-passed-count" class="text-lg font-bold text-cyber-cyan">0</span>
+            </div>
+            <div>
+                <span class="text-cyber-pink block text-[10px]">FAILED</span>
+                <span id="test-failed-count" class="text-lg font-bold text-cyber-pink">0</span>
+            </div>
+            <div>
+                <span class="text-on-surface/40 block text-[10px]">DURATION</span>
+                <span id="test-duration" class="text-lg font-bold text-on-surface">0ms</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Suites Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Core System Tests -->
+        <div class="hud-border p-5 bg-surface-dark/90 border-cyber-purple/20">
+            <div class="flex justify-between items-center border-b border-cyber-purple/20 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-md text-cyber-purple">dns</span>
+                    <h3 class="text-sm font-headline tracking-widest text-on-surface">CORE_ROUTER_SANITY</h3>
+                </div>
+                <span id="badge-core" class="text-[9px] font-headline border border-on-surface/20 px-2 py-0.5 text-on-surface/40">IDLE</span>
+            </div>
+            <div id="results-core" class="space-y-3 font-mono text-xs">
+                <div class="text-on-surface/40">Click run diagnostics to verify page module routing.</div>
+            </div>
+        </div>
+
+        <!-- Sorting Algorithm Correctness -->
+        <div class="hud-border p-5 bg-surface-dark/90 border-cyber-purple/20">
+            <div class="flex justify-between items-center border-b border-cyber-purple/20 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-md text-cyber-purple">sort</span>
+                    <h3 class="text-sm font-headline tracking-widest text-on-surface">SORTING_ALGORITHMS</h3>
+                </div>
+                <span id="badge-sorting" class="text-[9px] font-headline border border-on-surface/20 px-2 py-0.5 text-on-surface/40">IDLE</span>
+            </div>
+            <div id="results-sorting" class="space-y-3 font-mono text-xs">
+                <div class="text-on-surface/40">Click run diagnostics to verify sort state mutations.</div>
+            </div>
+        </div>
+
+        <!-- Searching Algorithm Correctness -->
+        <div class="hud-border p-5 bg-surface-dark/90 border-cyber-purple/20">
+            <div class="flex justify-between items-center border-b border-cyber-purple/20 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-md text-cyber-purple">search</span>
+                    <h3 class="text-sm font-headline tracking-widest text-on-surface">SEARCH_ALGORITHMS</h3>
+                </div>
+                <span id="badge-searching" class="text-[9px] font-headline border border-on-surface/20 px-2 py-0.5 text-on-surface/40">IDLE</span>
+            </div>
+            <div id="results-searching" class="space-y-3 font-mono text-xs">
+                <div class="text-on-surface/40">Click run diagnostics to verify search indexes.</div>
+            </div>
+        </div>
+
+        <!-- Graph Algorithm Correctness -->
+        <div class="hud-border p-5 bg-surface-dark/90 border-cyber-purple/20">
+            <div class="flex justify-between items-center border-b border-cyber-purple/20 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-md text-cyber-purple">hub</span>
+                    <h3 class="text-sm font-headline tracking-widest text-on-surface">GRAPH_ALGORITHMS</h3>
+                </div>
+                <span id="badge-graph" class="text-[9px] font-headline border border-on-surface/20 px-2 py-0.5 text-on-surface/40">IDLE</span>
+            </div>
+            <div id="results-graph" class="space-y-3 font-mono text-xs">
+                <div class="text-on-surface/40">Click run diagnostics to verify BFS/DFS traversals.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostic Details Console Output -->
+    <div class="hud-border p-5 bg-surface-dark/95 border-cyber-purple/20">
+        <div class="flex items-center gap-2 border-b border-cyber-purple/20 pb-3 mb-4">
+            <span class="material-symbols-outlined text-md text-cyber-pink">terminal</span>
+            <h3 class="text-sm font-headline tracking-widest text-on-surface">DIAGNOSTIC_CONSOLE_LOGS</h3>
+        </div>
+        <div id="console-logs" class="bg-onyx p-4 border border-white/5 font-mono text-[11px] text-on-surface/60 overflow-y-auto max-h-60 space-y-1 h-60">
+            <div class="text-cyber-purple font-semibold">&gt;&gt; Ready to execute test suites.</div>
+            <div class="text-on-surface/40">&gt;&gt; Click RUN_DIAGNOSTICS above to start testing live modules.</div>
+        </div>
+    </div>
+</div>
