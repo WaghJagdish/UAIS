@@ -2,7 +2,7 @@
 
 // ── String Algorithms Step Generators ────────────────────────────────────────
 
-function runNaiveSearch(text, pattern) {
+function runNaiveSearch(text, pattern, generateSteps = true) {
     let steps = [];
     let matches = [];
     let comparisons = 0;
@@ -15,15 +15,17 @@ function runNaiveSearch(text, pattern) {
         while (j < m) {
             comparisons++;
             const matchChar = text[i + j] === pattern[j];
-            steps.push({
-                text: text,
-                pattern: pattern,
-                windowStart: i,
-                charPos: j,
-                match: matchChar,
-                matches: [...matches],
-                description: `Naive slide window index ${i}: text[${i+j}]='${text[i+j]}' vs pattern[${j}]='${pattern[j]}' ${matchChar ? '✅ match' : '❌ mismatch'}`
-            });
+            if (generateSteps) {
+                steps.push({
+                    text: text,
+                    pattern: pattern,
+                    windowStart: i,
+                    charPos: j,
+                    match: matchChar,
+                    matches: [...matches],
+                    description: `Naive slide window index ${i}: text[${i+j}]='${text[i+j]}' vs pattern[${j}]='${pattern[j]}' ${matchChar ? '✅ match' : '❌ mismatch'}`
+                });
+            }
             if (!matchChar) {
                 windowMatch = false;
                 break;
@@ -32,22 +34,24 @@ function runNaiveSearch(text, pattern) {
         }
         if (windowMatch) {
             matches.push(i);
-            steps.push({
-                text: text,
-                pattern: pattern,
-                windowStart: i,
-                charPos: m,
-                match: true,
-                matches: [...matches],
-                description: `🎉 Pattern match confirmed at index ${i}!`
-            });
+            if (generateSteps) {
+                steps.push({
+                    text: text,
+                    pattern: pattern,
+                    windowStart: i,
+                    charPos: m,
+                    match: true,
+                    matches: [...matches],
+                    description: `🎉 Pattern match confirmed at index ${i}!`
+                });
+            }
         }
     }
 
     return { matches, steps, comparisons };
 }
 
-function runKMPSearch(text, pattern) {
+function runKMPSearch(text, pattern, generateSteps = true) {
     function computeLPS(pat) {
         let lps = Array(pat.length).fill(0);
         let len = 0;
@@ -81,15 +85,17 @@ function runKMPSearch(text, pattern) {
     while (i < n) {
         comparisons++;
         const matchChar = text[i] === pattern[j];
-        steps.push({
-            text: text,
-            pattern: pattern,
-            windowStart: i - j,
-            charPos: j,
-            match: matchChar,
-            matches: [...matches],
-            description: `KMP cursor i=${i}, j=${j}: text[${i}]='${text[i]}' vs pattern[${j}]='${pattern[j]}' ${matchChar ? '✅' : '❌ → skip using LPS'}`
-        });
+        if (generateSteps) {
+            steps.push({
+                text: text,
+                pattern: pattern,
+                windowStart: i - j,
+                charPos: j,
+                match: matchChar,
+                matches: [...matches],
+                description: `KMP cursor i=${i}, j=${j}: text[${i}]='${text[i]}' vs pattern[${j}]='${pattern[j]}' ${matchChar ? '✅' : '❌ → skip using LPS'}`
+            });
+        }
 
         if (matchChar) {
             i++;
@@ -104,15 +110,17 @@ function runKMPSearch(text, pattern) {
 
         if (j === m) {
             matches.push(i - j);
-            steps.push({
-                text: text,
-                pattern: pattern,
-                windowStart: i - j,
-                charPos: m,
-                match: true,
-                matches: [...matches],
-                description: `🎉 Pattern match confirmed at index ${i - j}!`
-            });
+            if (generateSteps) {
+                steps.push({
+                    text: text,
+                    pattern: pattern,
+                    windowStart: i - j,
+                    charPos: m,
+                    match: true,
+                    matches: [...matches],
+                    description: `🎉 Pattern match confirmed at index ${i - j}!`
+                });
+            }
             j = lps[j - 1];
         }
     }
@@ -120,7 +128,7 @@ function runKMPSearch(text, pattern) {
     return { matches, steps, comparisons, lps };
 }
 
-function runRabinKarpSearch(text, pattern, base = 256, mod = 101) {
+function runRabinKarpSearch(text, pattern, base = 256, mod = 101, generateSteps = true) {
     let steps = [];
     let matches = [];
     let comparisons = 0;
@@ -146,15 +154,17 @@ function runRabinKarpSearch(text, pattern, base = 256, mod = 101) {
         const hashMatch = (pHash === tHash);
         const actualMatch = hashMatch && text.substring(i, i + m) === pattern;
         
-        steps.push({
-            text: text,
-            pattern: pattern,
-            windowStart: i,
-            charPos: 0,
-            match: actualMatch,
-            matches: [...matches],
-            description: `RK Window [${i}:${i+m}] ('${text.substring(i, i+m)}'): Hash(Text)=${tHash}, Hash(Pattern)=${pHash} → ${hashMatch ? 'Hash Match ✅' : 'Hash Miss ❌'}${hashMatch ? (actualMatch ? ' → String verified ✅' : ' → Spurious Collision ❌') : ''}`
-        });
+        if (generateSteps) {
+            steps.push({
+                text: text,
+                pattern: pattern,
+                windowStart: i,
+                charPos: 0,
+                match: actualMatch,
+                matches: [...matches],
+                description: `RK Window [${i}:${i+m}] ('${text.substring(i, i+m)}'): Hash(Text)=${tHash}, Hash(Pattern)=${pHash} → ${hashMatch ? 'Hash Match ✅' : 'Hash Miss ❌'}${hashMatch ? (actualMatch ? ' → String verified ✅' : ' → Spurious Collision ❌') : ''}`
+            });
+        }
 
         if (actualMatch) {
             matches.push(i);
@@ -171,7 +181,7 @@ function runRabinKarpSearch(text, pattern, base = 256, mod = 101) {
     return { matches, steps, comparisons };
 }
 
-function runBoyerMooreSearch(text, pattern) {
+function runBoyerMooreSearch(text, pattern, generateSteps = true) {
     function badCharTable(pat) {
         let table = {};
         for (let i = 0; i < pat.length; i++) {
@@ -194,43 +204,49 @@ function runBoyerMooreSearch(text, pattern) {
         let j = m - 1;
         while (j >= 0 && pattern[j] === text[s + j]) {
             comparisons++;
-            steps.push({
-                text: text,
-                pattern: pattern,
-                windowStart: s,
-                charPos: j,
-                match: true,
-                matches: [...matches],
-                description: `Boyer-Moore matching right-to-left: text[${s+j}]='${text[s+j]}' == pattern[${j}]='${pattern[j]}' ✅`
-            });
+            if (generateSteps) {
+                steps.push({
+                    text: text,
+                    pattern: pattern,
+                    windowStart: s,
+                    charPos: j,
+                    match: true,
+                    matches: [...matches],
+                    description: `Boyer-Moore matching right-to-left: text[${s+j}]='${text[s+j]}' == pattern[${j}]='${pattern[j]}' ✅`
+                });
+            }
             j--;
         }
 
         if (j < 0) {
             matches.push(s);
-            steps.push({
-                text: text,
-                pattern: pattern,
-                windowStart: s,
-                charPos: -1,
-                match: true,
-                matches: [...matches],
-                description: `🎉 Pattern match confirmed at index ${s}!`
-            });
+            if (generateSteps) {
+                steps.push({
+                    text: text,
+                    pattern: pattern,
+                    windowStart: s,
+                    charPos: -1,
+                    match: true,
+                    matches: [...matches],
+                    description: `🎉 Pattern match confirmed at index ${s}!`
+                });
+            }
             s += (s + m < n) ? (m - (bc[text[s + m]] !== undefined ? bc[text[s + m]] : -1)) : 1;
         } else {
             comparisons++;
             const charIdx = bc[text[s + j]] !== undefined ? bc[text[s + j]] : -1;
             const skip = Math.max(1, j - charIdx);
-            steps.push({
-                text: text,
-                pattern: pattern,
-                windowStart: s,
-                charPos: j,
-                match: false,
-                matches: [...matches],
-                description: `Mismatch at text[${s+j}]='${text[s+j]}' vs pattern[${j}]='${pattern[j]}' ❌ → skip ${skip} using bad-char rule`
-            });
+            if (generateSteps) {
+                steps.push({
+                    text: text,
+                    pattern: pattern,
+                    windowStart: s,
+                    charPos: j,
+                    match: false,
+                    matches: [...matches],
+                    description: `Mismatch at text[${s+j}]='${text[s+j]}' vs pattern[${j}]='${pattern[j]}' ❌ → skip ${skip} using bad-char rule`
+                });
+            }
             s += skip;
         }
     }
@@ -569,10 +585,10 @@ function runStringBenchmark() {
 
     const results = {};
     const algos = {
-        'Naive Search': runNaiveSearch,
-        'Rabin-Karp': runRabinKarpSearch,
-        'KMP': runKMPSearch,
-        'Boyer-Moore': runBoyerMooreSearch
+        'Naive Search': (t, p) => runNaiveSearch(t, p, false),
+        'Rabin-Karp': (t, p) => runRabinKarpSearch(t, p, 256, 101, false),
+        'KMP': (t, p) => runKMPSearch(t, p, false),
+        'Boyer-Moore': (t, p) => runBoyerMooreSearch(t, p, false)
     };
 
     for (const [name, fn] of Object.entries(algos)) {
