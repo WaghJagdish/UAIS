@@ -8,8 +8,7 @@ const PAGES = {
     'paradigms': 'modules/paradigms.html',
     'strings': 'modules/strings.html',
     'graph': 'modules/graph.html',
-    'streaming': 'modules/streaming.html',
-    'tests': 'modules/tests.html'
+    'streaming': 'modules/streaming.html'
 };
 
 const SIDEBAR_MAP = {
@@ -19,8 +18,7 @@ const SIDEBAR_MAP = {
     'paradigms': 'side-paradigms',
     'strings': 'side-strings',
     'graph': 'side-graph',
-    'streaming': 'side-streaming',
-    'tests': null
+    'streaming': 'side-streaming'
 };
 
 let currentPage = 'home';
@@ -69,25 +67,18 @@ async function loadView(page) {
     const sidebar = document.getElementById('app-sidebar');
     
     // 1. Sidebar visibility
-    if (page === 'home' || page === 'tests') {
+    if (page === 'home') {
         sidebar.className = "hidden";
-        if (page === 'home') {
-            document.getElementById('nav-home').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
-            if (document.getElementById('nav-tests')) document.getElementById('nav-tests').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
-        } else {
-            document.getElementById('nav-home').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
-            if (document.getElementById('nav-tests')) document.getElementById('nav-tests').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
-        }
+        document.getElementById('nav-home').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
     } else {
         sidebar.className = "hidden lg:flex lg:w-64 border-r border-cyber-purple/20 bg-surface-dark/90 backdrop-blur-md p-6 flex-col justify-between shrink-0";
         document.getElementById('nav-home').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
-        if (document.getElementById('nav-tests')) document.getElementById('nav-tests').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
     }
 
     // Update navigation active states
     // Header navigations
     const navSimulations = document.getElementById('nav-simulations');
-    if (page !== 'home' && page !== 'tests') {
+    if (page !== 'home') {
         navSimulations.className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
     } else {
         navSimulations.className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
