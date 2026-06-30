@@ -328,7 +328,8 @@ function generateActiveArray() {
     const mode = document.querySelector('input[name="input-mode"]:checked').value;
     if (mode === 'random') {
         const size = parseInt(document.getElementById('array-size').value);
-        const seed = parseInt(document.getElementById('random-seed').value) || 42;
+        const seedEl = document.getElementById('random-seed');
+        const seed = seedEl ? (parseInt(seedEl.value) || 42) : 42;
         const rng = new SeededRandom(seed);
         currentArray = rng.sampleRange(5, 95, size);
     } else {
@@ -363,7 +364,7 @@ function renderBars(arr, highlights) {
     
     arr.forEach((val, idx) => {
         const bar = document.createElement('div');
-        bar.className = "flex-grow flex flex-col justify-end items-center relative text-on-surface select-none";
+        bar.className = "h-full flex-grow flex flex-col justify-end items-center relative text-on-surface select-none";
         
         let colorClass = "bg-slate-700/20 border-slate-700/50";
         let barColor = "rgba(70,69,85,0.2)";
@@ -386,7 +387,7 @@ function renderBars(arr, highlights) {
         const heightPercent = (val / maxVal) * 100;
         
         bar.innerHTML = `
-            <span class="text-[8px] font-mono mb-1 opacity-0 hover:opacity-100 transition-opacity z-10">${val}</span>
+            <span class="text-[9px] font-mono mb-1 text-on-surface/85 z-10">${val}</span>
             <div class="w-full border-t border-x ${colorClass} transition-all duration-300 relative" 
                  style="height: ${heightPercent}%; background-color: ${barColor}; border-color: ${borderGlow}; box-shadow: inset 0 2px 4px rgba(255,255,255,0.02)">
                  <div class="absolute bottom-0 inset-x-0 bg-white/2 opacity-5 pointer-events-none" style="height: 50%;"></div>
@@ -400,7 +401,25 @@ function renderBars(arr, highlights) {
 function startSimulation() {
     stopAutoPlay();
     
+    const mode = document.querySelector('input[name="input-mode"]:checked').value;
     const algo = document.getElementById('algo-select').value;
+
+    // Sync custom array if in custom mode
+    if (mode === 'custom') {
+        const raw = document.getElementById('custom-array-input').value;
+        try {
+            currentArray = raw.split(',').map(x => {
+                const parsed = parseInt(x.trim());
+                if (isNaN(parsed)) throw new Error();
+                return parsed;
+            });
+            renderBars(currentArray, {});
+        } catch (e) {
+            alert("Invalid custom array. Please use comma-separated integers.");
+            return;
+        }
+    }
+    
     const algoMap = {
         'selection': runSelectionSort,
         'insertion': runInsertionSort,

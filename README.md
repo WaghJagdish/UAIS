@@ -8,11 +8,8 @@
 ## 🚀 Quick Start
 
 ```bash
-# 1. Install dependencies
-pip install streamlit plotly networkx matplotlib numpy pandas
-
-# 2. Run the app
-streamlit run app.py
+# Run the app
+python3 app.py
 ```
 
 App opens at **http://localhost:8501**

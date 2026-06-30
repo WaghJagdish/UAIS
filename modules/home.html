@@ -1,20 +1,20 @@
 <!-- Hero Section HUD -->
-<section class="mb-20 hud-border bg-surface-dark/80 p-10 backdrop-blur-md relative overflow-hidden" style="height: 720px;">
+<section class="mb-20 hud-border bg-surface-dark/80 p-6 sm:p-10 backdrop-blur-md relative overflow-hidden min-h-[720px] lg:h-[720px]">
     <!-- Outer grid inside the single border container -->
     <div class="grid grid-cols-12 gap-8 h-full">
         <!-- Left text section -->
-        <div class="col-span-12 md:col-span-8 flex flex-col justify-between h-full pb-6">
+        <div class="col-span-12 md:col-span-8 flex flex-col justify-center gap-10 h-full pb-6">
             <div>
                 <div class="flex items-center gap-3 text-cyber-cyan mb-6">
                     <span class="material-symbols-outlined text-sm animate-pulse">terminal</span>
                     <span class="text-[10px] font-bold tracking-[0.5em] uppercase">SYSTEM INITIALIZATION COMPLETE // CORE_STABLE</span>
                 </div>
-                <h2 class="text-6xl font-headline font-black mb-8 leading-none tracking-tighter">
+                <h2 class="text-2xl sm:text-4xl lg:text-6xl font-headline font-black mb-4 sm:mb-8 leading-none tracking-tighter">
                     UNIFIED ALGORITHM<br/>
                     <span class="text-cyber-purple glow-text-purple">INTELLIGENCE SYSTEM</span>
                 </h2>
             </div>
-            <p class="text-lg text-on-surface/70 max-w-2xl font-mono leading-relaxed border-l-2 border-cyber-purple/30 pl-6">
+            <p class="text-sm sm:text-lg text-on-surface/70 max-w-2xl font-mono leading-relaxed border-l-2 border-cyber-purple/30 pl-4 sm:pl-6">
                 A high-fidelity visualization environment designed for analytical rigor. Analyze spatial complexity, temporal execution, and data flow patterns across six distinct computational categories.
             </p>
         </div>
@@ -24,8 +24,8 @@
             <div class="absolute top-0 left-0 text-[9px] text-cyber-cyan/40 font-mono">3D_INTERACTIVE_ROBOT</div>
             <div class="absolute top-0 right-0 text-[9px] text-cyber-purple/40 font-mono">MODEL_SR_09</div>
             
-            <div class="w-full flex-grow flex items-center justify-center relative mt-6" style="height: 480px;">
-                <spline-viewer url="https://prod.spline.design/LQoTY38YRTJeKteK/scene.splinecode"></spline-viewer>
+            <div class="w-full flex-grow flex items-center justify-center relative mt-6 h-[300px] lg:h-[480px]">
+                <spline-viewer class="w-full h-full" url="https://prod.spline.design/LQoTY38YRTJeKteK/scene.splinecode"></spline-viewer>
             </div>
             
             <div class="border-t border-cyber-purple/20 pt-2 flex justify-between items-center text-[9px] font-mono text-on-surface/50">
@@ -119,65 +119,68 @@
 
 <!-- Guidance & Contributors Section -->
 <section class="border-t border-cyber-purple/20 pt-20">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
-        <!-- Guidance Column -->
-        <div class="lg:col-span-1 border-r lg:border-r border-cyber-purple/10 pr-0 lg:pr-8">
-            <div class="mb-12">
-                <h3 class="text-4xl font-headline font-black mb-2 text-cyber-cyan glow-text-cyan">PROJECT_GUIDANCE</h3>
-                <p class="text-on-surface/60 font-mono text-xs italic">Academic oversight and leadership</p>
-            </div>
-            <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all">
+    <!-- Titles Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
+        <!-- Guidance Title -->
+        <div class="md:col-span-1 border-b md:border-b-0 border-cyber-cyan/10 pb-4 md:pb-0">
+            <h3 class="text-lg sm:text-2xl font-headline font-black mb-1 text-cyber-cyan glow-text-cyan">PROJECT_GUIDANCE</h3>
+            <p class="text-on-surface/60 font-mono text-xs italic">Academic oversight and leadership</p>
+        </div>
+        <!-- Contributors Title -->
+        <div class="md:col-span-2">
+            <h3 class="text-lg sm:text-2xl font-headline font-black mb-1">PROJECT_CONTRIBUTORS</h3>
+            <p class="text-cyber-purple font-mono text-xs italic">The development team behind AlgoVis Pro</p>
+        </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Guidance Card -->
+        <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all flex flex-col justify-between h-full min-h-[190px]">
+            <div>
                 <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-cyan/20">
-                    <p class="text-2xl font-headline text-on-surface">Dr. Prachi Janrao</p>
+                    <p class="text-xl font-headline text-on-surface">Dr. Prachi Janrao</p>
                     <span class="text-[9px] text-cyber-cyan font-headline border border-cyber-cyan/30 px-2 py-0.5">HOD_AIDS</span>
                 </div>
-                <p class="text-[11px] text-cyber-cyan font-bold tracking-[0.2em] mb-2 uppercase">HOD AI & Data Science</p>
+                <p class="text-[10px] text-cyber-cyan font-bold tracking-[0.2em] mb-2 uppercase">HOD AI & Data Science</p>
                 <p class="text-xs text-on-surface/50 italic font-mono">Academic Supervisor & Guide</p>
             </div>
         </div>
 
-        <!-- Contributors Column -->
-        <div class="lg:col-span-2">
-            <div class="flex items-end justify-between mb-12">
-                <div>
-                    <h3 class="text-4xl font-headline font-black mb-2">PROJECT_CONTRIBUTORS</h3>
-                    <p class="text-cyber-purple font-mono text-xs italic">The development team behind AlgoVis Pro</p>
+        <!-- Contributor 1 Card -->
+        <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all flex flex-col justify-between h-full min-h-[190px]">
+            <div>
+                <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-purple/20">
+                    <p class="text-xl font-headline text-on-surface">Gangotrinath Tripathi</p>
+                    <span class="text-[9px] text-cyber-purple font-headline border border-cyber-purple/30 px-2 py-0.5">CORE_DEV_01</span>
+                </div>
+                <p class="text-[10px] text-cyber-purple font-bold tracking-[0.2em] mb-4 uppercase">Lead Developer / Contributor</p>
+                <div class="space-y-2 font-mono text-xs text-on-surface/50">
+                    <a href="mailto:gangotrinathtripathi@gmail.com" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
+                        <span class="material-symbols-outlined text-sm">mail</span> gangotrinathtripathi@gmail.com
+                    </a>
+                    <a href="https://www.linkedin.com/in/gangotrinath-tripathi-864425211" target="_blank" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
+                        <span class="material-symbols-outlined text-sm">link</span> LinkedIn Profile
+                    </a>
                 </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <!-- Contributor 1 -->
-                <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all">
-                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-purple/20">
-                        <p class="text-2xl font-headline text-on-surface">Gangotrinath Tripathi</p>
-                        <span class="text-[9px] text-cyber-purple font-headline border border-cyber-purple/30 px-2 py-0.5">CORE_DEV_01</span>
-                    </div>
-                    <p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-4 uppercase">Lead Developer / Contributor</p>
-                    <div class="space-y-2 font-mono text-xs text-on-surface/50">
-                        <a href="mailto:gangotrinathtripathi@gmail.com" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
-                            <span class="material-symbols-outlined text-sm">mail</span> gangotrinathtripathi@gmail.com
-                        </a>
-                        <a href="https://www.linkedin.com/in/gangotrinath-tripathi-864425211" target="_blank" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
-                            <span class="material-symbols-outlined text-sm">link</span> LinkedIn Profile
-                        </a>
-                    </div>
+        </div>
+        
+        <!-- Contributor 2 Card -->
+        <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all flex flex-col justify-between h-full min-h-[190px]">
+            <div>
+                <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-purple/20">
+                    <p class="text-xl font-headline text-on-surface">Jagdish Wagh</p>
+                    <span class="text-[9px] text-cyber-purple font-headline border border-cyber-purple/30 px-2 py-0.5">CORE_DEV_02</span>
                 </div>
-                
-                <!-- Contributor 2 -->
-                <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all">
-                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-purple/20">
-                        <p class="text-2xl font-headline text-on-surface">Jagdish Wagh</p>
-                        <span class="text-[9px] text-cyber-purple font-headline border border-cyber-purple/30 px-2 py-0.5">CORE_DEV_02</span>
-                    </div>
-                    <p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-4 uppercase">Lead Developer / Contributor</p>
-                    <div class="space-y-2 font-mono text-xs text-on-surface/50">
-                        <a href="mailto:waghjag29@gmail.com" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
-                            <span class="material-symbols-outlined text-sm">mail</span> waghjag29@gmail.com
-                        </a>
-                        <a href="https://www.linkedin.com/in/jagdish01/" target="_blank" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
-                            <span class="material-symbols-outlined text-sm">link</span> LinkedIn Profile
-                        </a>
-                    </div>
+                <p class="text-[10px] text-cyber-purple font-bold tracking-[0.2em] mb-4 uppercase">Lead Developer / Contributor</p>
+                <div class="space-y-2 font-mono text-xs text-on-surface/50">
+                    <a href="mailto:waghjag29@gmail.com" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
+                        <span class="material-symbols-outlined text-sm">mail</span> waghjag29@gmail.com
+                    </a>
+                    <a href="https://www.linkedin.com/in/jagdish01/" target="_blank" class="flex items-center gap-2 hover:text-cyber-cyan transition-colors">
+                        <span class="material-symbols-outlined text-sm">link</span> LinkedIn Profile
+                    </a>
                 </div>
             </div>
         </div>

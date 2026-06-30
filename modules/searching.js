@@ -197,7 +197,8 @@ function generateSearchArray() {
     let tempArray = [];
     if (mode === 'random') {
         const size = parseInt(document.getElementById('array-size').value);
-        const seed = parseInt(document.getElementById('random-seed').value) || 42;
+        const seedEl = document.getElementById('random-seed');
+        const seed = seedEl ? (parseInt(seedEl.value) || 42) : 42;
         const rng = new SeededRandom(seed);
         tempArray = rng.sampleRange(5, 195, size);
     } else {
@@ -221,11 +222,13 @@ function generateSearchArray() {
         searchCurrentArray = tempArray;
     }
 
-    // Auto set target if target value not in range
+    // Auto set target if target value is empty
     if (searchCurrentArray.length > 0) {
-        // Pick a value from the array for convenience
-        const middleIdx = Math.floor(searchCurrentArray.length / 2);
-        document.getElementById('search-target').value = searchCurrentArray[middleIdx];
+        const targetInput = document.getElementById('search-target');
+        if (!targetInput.value.trim()) {
+            const middleIdx = Math.floor(searchCurrentArray.length / 2);
+            targetInput.value = searchCurrentArray[middleIdx];
+        }
     }
 
     renderSearchBlocks(searchCurrentArray, {});
@@ -279,7 +282,30 @@ function renderSearchBlocks(arr, highlights) {
 function startSearchSimulation() {
     searchStopAutoPlay();
     
+    const mode = document.querySelector('input[name="input-mode"]:checked').value;
     const algo = document.getElementById('algo-select').value;
+
+    // Sync custom array if in custom mode
+    if (mode === 'custom') {
+        const raw = document.getElementById('custom-array-input').value;
+        try {
+            const tempArray = raw.split(',').map(x => {
+                const parsed = parseInt(x.trim());
+                if (isNaN(parsed)) throw new Error();
+                return parsed;
+            });
+            if (algo === 'binary') {
+                searchCurrentArray = tempArray.sort((x, y) => x - y);
+            } else {
+                searchCurrentArray = tempArray;
+            }
+            renderSearchBlocks(searchCurrentArray, {});
+        } catch (e) {
+            alert("Invalid custom array. Please use comma-separated integers.");
+            return;
+        }
+    }
+
     searchTargetValue = parseInt(document.getElementById('search-target').value);
     if (isNaN(searchTargetValue)) {
         alert("Please enter a valid target integer.");

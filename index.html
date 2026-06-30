@@ -34,7 +34,7 @@
             },
         }
     </script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0.5">
 </head>
 <body class="selection:bg-cyber-purple/40 font-mono">
     <div class="scanline"></div>
@@ -46,25 +46,18 @@
     </div>
     
     <!-- Top HUD Header -->
-    <header class="fixed top-0 inset-x-0 h-16 border-b border-cyber-purple/20 bg-onyx/80 backdrop-blur-xl z-50 flex items-center justify-between px-8">
-        <div class="flex items-center gap-4 cursor-pointer" onclick="navigateTo('home')">
-            <div class="w-8 h-8 flex items-center justify-center bg-cyber-purple/10 border border-cyber-purple/40">
+    <header class="fixed top-0 inset-x-0 h-16 border-b border-cyber-purple/20 bg-onyx/80 backdrop-blur-xl z-50 flex items-center justify-between px-4 sm:px-8">
+        <div class="flex items-center gap-2 sm:gap-4 cursor-pointer" onclick="navigateTo('home')">
+            <div class="w-8 h-8 flex items-center justify-center bg-cyber-purple/10 border border-cyber-purple/40 shrink-0">
                 <span class="material-symbols-outlined text-cyber-purple text-xl">account_tree</span>
             </div>
-            <span class="font-headline font-black text-xl tracking-tighter italic text-on-surface">ALGOVIS_PRO_v2.0</span>
+            <span class="hidden sm:inline-block font-headline font-black text-sm sm:text-xl tracking-tighter italic text-on-surface truncate sm:max-w-none">ALGOVIS_PRO_v2.0</span>
         </div>
-        <nav class="flex gap-8">
-            <a id="nav-home" class="text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1" href="#" onclick="navigateTo('home'); return false;">COMMAND_ROOT</a>
-            <a id="nav-simulations" class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#" onclick="toggleDropdown(event); return false;">SIMULATIONS</a>
-            <a id="nav-meta" class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#">META_DATA</a>
+        <nav class="flex gap-4 sm:gap-8">
+            <a id="nav-home" class="text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1" href="#" onclick="navigateTo('home'); return false;">COMMAND_ROOT</a>
+            <a id="nav-simulations" class="text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#" onclick="toggleDropdown(event); return false;">SIMULATIONS</a>
         </nav>
-        <div class="flex items-center gap-4">
-            <div class="text-right">
-                <p class="text-[9px] font-bold text-cyber-purple tracking-widest uppercase">Operator</p>
-                <p class="text-xs font-headline">DR_ARIS_THORNE</p>
-            </div>
-            <img class="w-10 h-10 border border-cyber-cyan/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClQQBRJxw49UfWuSNNPRLw83yPrtARbOqVZ1GKaAZGm4ENyd5vin4CbFY9wHjD0FStONOEQ9-Yg_h3AwrbySUn_dMWThjcHRhn06JnuKxBFXnOJOMXU0yqUM8uIZOFYZAtMrTMqwwTyye9CrpHoI4Q8yI53VSZvk9nPTuGP_DeQpO3Y6oAJEZDIh4z1q7hP0yIymU_7uv07XEi-Wm0Qw46oKS0Lk4usSexENsGGCiqAE_Gq0QZJkXs"/>
-        </div>
+        <div class="w-4 sm:w-10"></div>
     </header>
 
     <!-- Simulations Dropdown Menu -->
@@ -112,30 +105,30 @@
         </aside>
 
         <!-- Main View Container -->
-        <main id="app-content" class="flex-grow p-10 max-w-full">
+        <main id="app-content" class="flex-grow p-4 sm:p-10 max-w-full overflow-x-hidden">
             <!-- Dynamically injected views go here -->
         </main>
     </div>
 
     <!-- HUD Footer -->
-    <footer class="fixed bottom-0 inset-x-0 h-10 border-t border-cyber-purple/20 bg-onyx/90 backdrop-blur-xl z-50 flex items-center justify-between px-8">
+    <footer class="fixed bottom-0 inset-x-0 h-10 border-t border-cyber-purple/20 bg-onyx/90 backdrop-blur-xl z-50 flex items-center justify-between px-4 sm:px-8">
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-2 font-mono text-[10px] text-on-surface/50">
                 <span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1] rounded-full animate-pulse"></span>
                 <span>SYS_STATUS: CORE_STABLE</span>
             </div>
         </div>
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4 sm:gap-6">
             <div class="flex items-center gap-2 font-mono text-[10px] text-on-surface/50">
                 <span class="material-symbols-outlined text-xs">schedule</span>
                 <span id="time-display">T_STAMP: 00:00:00_UTC</span>
             </div>
-            <div class="h-8 w-px bg-white/10"></div>
-            <div class="text-[9px] font-headline text-on-surface/30">ENCRYPTED_HUD_v2.0.4</div>
+            <div class="hidden md:block h-8 w-px bg-white/10"></div>
+            <div class="hidden md:block text-[9px] font-headline text-on-surface/30">ENCRYPTED_HUD_v2.0.4</div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="router.js"></script>
+    <script src="router.js?v=2.0.5"></script>
 </body>
 </html>

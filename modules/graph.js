@@ -424,13 +424,15 @@ function updateGraphStructure() {
 // ── Rendering Engine ─────────────────────────────────────────────────────────
 
 function drawGraph() {
-    if (!ctx) return;
+    if (!canvas || !document.body.contains(canvas)) return;
 
-    // Reset dimensions
+    // Reset dimensions safely with fallbacks
     const rect = canvas.parentNode.getBoundingClientRect();
-    if (canvas.width !== rect.width || canvas.height !== rect.height) {
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+    const newWidth = rect.width || 800;
+    const newHeight = rect.height || 320;
+    if (canvas.width !== newWidth || canvas.height !== newHeight) {
+        canvas.width = newWidth;
+        canvas.height = newHeight;
     }
 
     // Clear
@@ -966,6 +968,11 @@ function initGraphVisualizer() {
 
     // Handle canvas resizing
     window.addEventListener('resize', drawGraph);
+
+    // Initial resize of canvas to container dimensions before setting up node positions
+    const rect = canvas.parentNode.getBoundingClientRect();
+    canvas.width = rect.width || 800;
+    canvas.height = rect.height || 320;
 
     // Define initial positions on grid
     updateGraphStructure();

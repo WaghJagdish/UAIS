@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>AlgoVis Pro | HUD Interface</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=JetBrains+Mono:wght@300;400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=JetBrains+Mono:wght@300;400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -41,7 +44,7 @@
             font-family: 'JetBrains Mono', monospace;
             overflow-x: hidden;
         }
-        
+
         .scanline {
             width: 100%;
             height: 100px;
@@ -55,27 +58,38 @@
         }
 
         @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -100px; }
+            0% {
+                bottom: 100%;
+            }
+
+            100% {
+                bottom: -100px;
+            }
         }
 
         .hud-border {
             border: 1px solid rgba(5, 255, 161, 0.2);
             position: relative;
         }
+
         .hud-border::before {
             content: '';
             position: absolute;
-            top: -1px; left: -1px;
-            width: 10px; height: 10px;
+            top: -1px;
+            left: -1px;
+            width: 10px;
+            height: 10px;
             border-top: 2px solid #05ffa1;
             border-left: 2px solid #05ffa1;
         }
+
         .hud-border::after {
             content: '';
             position: absolute;
-            bottom: -1px; right: -1px;
-            width: 10px; height: 10px;
+            bottom: -1px;
+            right: -1px;
+            width: 10px;
+            height: 10px;
             border-bottom: 2px solid #05ffa1;
             border-right: 2px solid #05ffa1;
         }
@@ -83,6 +97,7 @@
         .glow-text-cyan {
             text-shadow: 0 0 10px rgba(5, 255, 161, 0.5);
         }
+
         .glow-text-purple {
             text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
         }
@@ -96,30 +111,50 @@
         }
 
         @keyframes pulse-cyan {
-            0%, 100% { box-shadow: 0 0 5px rgba(5, 255, 161, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(5, 255, 161, 0.6); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(5, 255, 161, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(5, 255, 161, 0.6);
+            }
         }
+
         .active-node {
             animation: pulse-cyan 2s infinite;
         }
 
         /* Custom Scrollbar for HUD */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #060608; }
-        ::-webkit-scrollbar-thumb { background: #bc13fe; border-radius: 2px; }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #060608;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #bc13fe;
+            border-radius: 2px;
+        }
     </style>
 </head>
+
 <body class="selection:bg-cyber-purple/40">
     <div class="scanline"></div>
     <!-- Background Elements -->
     <div class="fixed inset-0 pointer-events-none opacity-20">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-cyber-purple/30"></div>
         <div class="absolute top-1/2 left-0 -translate-y-1/2 w-full h-px bg-cyber-purple/30"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-cyber-cyan/10 rounded-full animate-spin-slow" style="animation: spin 60s linear infinite;"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-cyber-cyan/10 rounded-full animate-spin-slow"
+            style="animation: spin 60s linear infinite;"></div>
     </div>
-    
+
     <!-- HUD Overlay Top -->
-    <header class="fixed top-0 inset-x-0 h-16 border-b border-cyber-purple/20 bg-onyx/80 backdrop-blur-xl z-50 flex items-center justify-between px-8">
+    <header
+        class="fixed top-0 inset-x-0 h-16 border-b border-cyber-purple/20 bg-onyx/80 backdrop-blur-xl z-50 flex items-center justify-between px-8">
         <div class="flex items-center gap-4">
             <div class="w-8 h-8 flex items-center justify-center bg-cyber-purple/10 border border-cyber-purple/40">
                 <span class="material-symbols-outlined text-cyber-purple text-xl">account_tree</span>
@@ -127,22 +162,17 @@
             <span class="font-headline font-black text-xl tracking-tighter italic">ALGOVIS_PRO_v2.0</span>
         </div>
         <nav class="flex gap-8">
-            <a class="text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1" href="#" onclick="navigateTo('home'); return false;">COMMAND_ROOT</a>
-            <a class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#">SYS_LOGS</a>
-            <a class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1" href="#">META_DATA</a>
+            <a class="text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1"
+                href="#" onclick="navigateTo('home'); return false;">COMMAND_ROOT</a>
+            <a class="text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1"
+                href="#">SYS_LOGS</a>
         </nav>
-        <div class="flex items-center gap-4">
-            <div class="text-right">
-                <p class="text-[9px] font-bold text-cyber-purple tracking-widest uppercase">Operator</p>
-                <p class="text-xs font-headline">DR_ARIS_THORNE</p>
-            </div>
-            <img class="w-10 h-10 border border-cyber-cyan/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClQQBRJxw49UfWuSNNPRLw83yPrtARbOqVZ1GKaAZGm4ENyd5vin4CbFY9wHjD0FStONOEQ9-Yg_h3AwrbySUn_dMWThjcHRhn06JnuKxBFXnOJOMXU0yqUM8uIZOFYZAtMrTMqwwTyye9CrpHoI4Q8yI53VSZvk9nPTuGP_DeQpO3Y6oAJEZDIh4z1q7hP0yIymU_7uv07XEi-Wm0Qw46oKS0Lk4usSexENsGGCiqAE_Gq0QZJkXs"/>
-        </div>
     </header>
 
     <main class="pt-24 pb-32 px-12 max-w-full relative">
         <!-- Hero Section HUD -->
-        <section class="mb-20 hud-border bg-surface-dark/80 p-10 backdrop-blur-md relative overflow-hidden" style="height: 720px;">
+        <section class="mb-20 hud-border bg-surface-dark/80 p-10 backdrop-blur-md relative overflow-hidden"
+            style="height: 720px;">
             <!-- Outer grid inside the single border container -->
             <div class="grid grid-cols-12 gap-8 h-full">
                 <!-- Left text section -->
@@ -150,29 +180,38 @@
                     <div>
                         <div class="flex items-center gap-3 text-cyber-cyan mb-6">
                             <span class="material-symbols-outlined text-sm animate-pulse">terminal</span>
-                            <span class="text-[10px] font-bold tracking-[0.5em] uppercase">SYSTEM INITIALIZATION COMPLETE // CORE_STABLE</span>
+                            <span class="text-[10px] font-bold tracking-[0.5em] uppercase">SYSTEM INITIALIZATION
+                                COMPLETE // CORE_STABLE</span>
                         </div>
                         <h2 class="text-6xl font-headline font-black mb-8 leading-none tracking-tighter">
-                            UNIFIED ALGORITHM<br/>
+                            UNIFIED ALGORITHM<br />
                             <span class="text-cyber-purple glow-text-purple">INTELLIGENCE SYSTEM</span>
                         </h2>
                     </div>
-                    <p class="text-lg text-on-surface/70 max-w-2xl font-mono leading-relaxed border-l-2 border-cyber-purple/30 pl-6">
-                        A high-fidelity visualization environment designed for analytical rigor. Analyze spatial complexity, temporal execution, and data flow patterns across six distinct computational categories.
+                    <p
+                        class="text-lg text-on-surface/70 max-w-2xl font-mono leading-relaxed border-l-2 border-cyber-purple/30 pl-6">
+                        A high-fidelity visualization environment designed for analytical rigor. Analyze spatial
+                        complexity, temporal execution, and data flow patterns across six distinct computational
+                        categories.
                     </p>
                 </div>
-                
+
                 <!-- Right 3D robot section -->
-                <div class="col-span-12 md:col-span-4 flex flex-col justify-between h-full pb-6 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 text-[9px] text-cyber-cyan/40 font-mono">3D_INTERACTIVE_ROBOT</div>
-                    <div class="absolute top-0 right-0 text-[9px] text-cyber-purple/40 font-mono">MODEL_SR_09</div>
-                    
-                    <div class="w-full flex-grow flex items-center justify-center relative mt-6" style="height: 480px;">
-                        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js"></script>
-                        <spline-viewer url="https://prod.spline.design/LQoTY38YRTJeKteK/scene.splinecode"></spline-viewer>
+                <div
+                    class="col-span-12 md:col-span-4 flex flex-col justify-between h-full pb-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 text-[9px] text-cyber-cyan/40 font-mono">3D_INTERACTIVE_ROBOT
                     </div>
-                    
-                    <div class="border-t border-cyber-purple/20 pt-2 flex justify-between items-center text-[9px] font-mono text-on-surface/50">
+                    <div class="absolute top-0 right-0 text-[9px] text-cyber-purple/40 font-mono">MODEL_SR_09</div>
+
+                    <div class="w-full flex-grow flex items-center justify-center relative mt-6" style="height: 480px;">
+                        <script type="module"
+                            src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js"></script>
+                        <spline-viewer
+                            url="https://prod.spline.design/LQoTY38YRTJeKteK/scene.splinecode"></spline-viewer>
+                    </div>
+
+                    <div
+                        class="border-t border-cyber-purple/20 pt-2 flex justify-between items-center text-[9px] font-mono text-on-surface/50">
                         <span>RENDER_ENGINE: SPLINE_WEBGL</span>
                         <span class="text-cyber-cyan">ONLINE</span>
                     </div>
@@ -183,80 +222,129 @@
         <!-- Centered Hexagonal Command Center Navigation -->
         <section class="mb-32">
             <div class="text-center mb-16">
-                <h3 class="text-3xl font-headline italic inline-block border-x border-cyber-cyan/30 px-12 py-2">EXECUTION_DOMAINS</h3>
+                <h3 class="text-3xl font-headline italic inline-block border-x border-cyber-cyan/30 px-12 py-2">
+                    EXECUTION_DOMAINS</h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Sorting -->
-                <div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
-                    <div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">01</div>
+                <div
+                    class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+                    <div
+                        class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">
+                        01</div>
                     <span class="material-symbols-outlined text-cyber-cyan mb-4">sort</span>
                     <h4 class="text-xl font-headline mb-4 tracking-wider">SORTING</h4>
-                    <ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> QUICK SORT</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> MERGE SORT</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> HEAP SORT</li>
+                    <ul
+                        class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> QUICK SORT</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> MERGE SORT</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> HEAP SORT</li>
                     </ul>
-                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#" onclick="navigateTo('sorting'); return false;">LAUNCH_SIM.EXE</a>
+                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all"
+                        href="#" onclick="navigateTo('sorting'); return false;">LAUNCH_SIM.EXE</a>
                 </div>
                 <!-- Searching -->
-                <div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20 active-node">
-                    <div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">02</div>
+                <div
+                    class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20 active-node">
+                    <div
+                        class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">
+                        02</div>
                     <span class="material-symbols-outlined text-cyber-cyan mb-4">search</span>
                     <h4 class="text-xl font-headline mb-4 tracking-wider">SEARCHING</h4>
-                    <ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BINARY SEARCH</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BFS / DFS</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> A* NAVIGATION</li>
+                    <ul
+                        class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BINARY SEARCH</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BFS / DFS</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> A* NAVIGATION</li>
                     </ul>
-                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#" onclick="navigateTo('searching'); return false;">LAUNCH_SIM.EXE</a>
+                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all"
+                        href="#" onclick="navigateTo('searching'); return false;">LAUNCH_SIM.EXE</a>
                 </div>
                 <!-- Paradigms -->
-                <div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
-                    <div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">03</div>
+                <div
+                    class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+                    <div
+                        class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">
+                        03</div>
                     <span class="material-symbols-outlined text-cyber-cyan mb-4">category</span>
                     <h4 class="text-xl font-headline mb-4 tracking-wider">PARADIGMS</h4>
-                    <ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> DYNAMIC PROG</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> GREEDY STRATEGY</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BACKTRACKING</li>
+                    <ul
+                        class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> DYNAMIC PROG</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> GREEDY STRATEGY</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BACKTRACKING</li>
                     </ul>
-                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#" onclick="navigateTo('paradigms'); return false;">LAUNCH_SIM.EXE</a>
+                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all"
+                        href="#" onclick="navigateTo('paradigms'); return false;">LAUNCH_SIM.EXE</a>
                 </div>
                 <!-- Strings -->
-                <div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
-                    <div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">04</div>
+                <div
+                    class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+                    <div
+                        class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">
+                        04</div>
                     <span class="material-symbols-outlined text-cyber-cyan mb-4">text_fields</span>
                     <h4 class="text-xl font-headline mb-4 tracking-wider">STRINGS</h4>
-                    <ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> KMP PATTERN</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> RABIN-KARP</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> Z-ALGORITHM</li>
+                    <ul
+                        class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> KMP PATTERN</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> RABIN-KARP</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> Z-ALGORITHM</li>
                     </ul>
-                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#" onclick="navigateTo('strings'); return false;">LAUNCH_SIM.EXE</a>
+                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all"
+                        href="#" onclick="navigateTo('strings'); return false;">LAUNCH_SIM.EXE</a>
                 </div>
                 <!-- Graph Theory -->
-                <div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
-                    <div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">05</div>
+                <div
+                    class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+                    <div
+                        class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">
+                        05</div>
                     <span class="material-symbols-outlined text-cyber-cyan mb-4">hub</span>
                     <h4 class="text-xl font-headline mb-4 tracking-wider">GRAPH THEORY</h4>
-                    <ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> DIJKSTRA'S</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> KRUSKAL'S MST</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BELLMAN-FORD</li>
+                    <ul
+                        class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> DIJKSTRA'S</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> KRUSKAL'S MST</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> BELLMAN-FORD</li>
                     </ul>
-                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#" onclick="navigateTo('graph'); return false;">LAUNCH_SIM.EXE</a>
+                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all"
+                        href="#" onclick="navigateTo('graph'); return false;">LAUNCH_SIM.EXE</a>
                 </div>
                 <!-- Streaming -->
-                <div class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
-                    <div class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">06</div>
+                <div
+                    class="group relative hud-border bg-surface-dark/80 p-8 transition-all hover:bg-cyber-purple/10 border-cyber-purple/20">
+                    <div
+                        class="absolute top-4 right-4 text-[40px] font-black font-headline text-white/5 group-hover:text-cyber-purple/20 transition-colors">
+                        06</div>
                     <span class="material-symbols-outlined text-cyber-cyan mb-4">waves</span>
                     <h4 class="text-xl font-headline mb-4 tracking-wider">STREAMING</h4>
-                    <ul class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> COUNT-MIN SKETCH</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> HYPERLOGLOG</li>
-                        <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> RESERVOIR SAMPLE</li>
+                    <ul
+                        class="space-y-2 mb-8 font-mono text-xs text-on-surface/50 group-hover:text-on-surface transition-colors">
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> COUNT-MIN SKETCH</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> HYPERLOGLOG</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1.5 h-1.5 bg-cyber-cyan shadow-[0_0_5px_#05ffa1]"></span> RESERVOIR SAMPLE</li>
                     </ul>
-                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all" href="#" onclick="navigateTo('streaming'); return false;">LAUNCH_SIM.EXE</a>
+                    <a class="block w-full py-2 border border-cyber-cyan/40 text-center text-[10px] font-headline tracking-widest text-cyber-cyan hover:bg-cyber-cyan hover:text-onyx transition-all"
+                        href="#" onclick="navigateTo('streaming'); return false;">LAUNCH_SIM.EXE</a>
                 </div>
             </div>
         </section>
@@ -266,29 +354,35 @@
             <div class="flex items-end justify-between mb-16">
                 <div>
                     <h3 class="text-5xl font-headline font-black mb-2">PROJECT_CONTRIBUTORS</h3>
-                    <p class="text-cyber-purple font-mono italic">The academic collective behind AlgoVis Pro // AUTHORIZED_PERSONNEL_ONLY</p>
+                    <p class="text-cyber-purple font-mono italic">The academic collective behind AlgoVis Pro //
+                        AUTHORIZED_PERSONNEL_ONLY</p>
                 </div>
-                <button class="hud-border bg-white/5 px-8 py-4 text-[10px] font-headline tracking-widest hover:bg-cyber-purple hover:text-white transition-all">DIRECTORY.DB</button>
+                <button
+                    class="hud-border bg-white/5 px-8 py-4 text-[10px] font-headline tracking-widest hover:bg-cyber-purple hover:text-white transition-all">DIRECTORY.DB</button>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl">
                 <!-- Member 1 -->
                 <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all">
                     <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-purple/20">
                         <p class="text-2xl font-headline text-on-surface">Sarah Chen</p>
-                        <span class="text-[9px] text-cyber-cyan font-headline border border-cyber-cyan/30 px-2 py-0.5">LVL_4_DEV</span>
+                        <span
+                            class="text-[9px] text-cyber-cyan font-headline border border-cyber-cyan/30 px-2 py-0.5">LVL_4_DEV</span>
                     </div>
-                    <p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-2 uppercase">Lead Developer</p>
+                    <p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-2 uppercase">Lead Developer
+                    </p>
                     <p class="text-xs text-on-surface/50 italic font-mono">Optimization Specialist</p>
                 </div>
-                
+
                 <!-- Member 2 -->
                 <div class="group p-6 hud-border bg-surface-dark/45 hover:bg-cyber-purple/5 transition-all">
                     <div class="flex justify-between items-center mb-4 pb-2 border-b border-cyber-purple/20">
                         <p class="text-2xl font-headline text-on-surface">Dr. Marcus Vane</p>
-                        <span class="text-[9px] text-cyber-cyan font-headline border border-cyber-cyan/30 px-2 py-0.5">RES_CHIEF</span>
+                        <span
+                            class="text-[9px] text-cyber-cyan font-headline border border-cyber-cyan/30 px-2 py-0.5">RES_CHIEF</span>
                     </div>
-                    <p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-2 uppercase">Algorithm Researcher</p>
+                    <p class="text-[11px] text-cyber-purple font-bold tracking-[0.2em] mb-2 uppercase">Algorithm
+                        Researcher</p>
                     <p class="text-xs text-on-surface/50 italic font-mono">Graph Theory Expert</p>
                 </div>
             </div>
@@ -296,7 +390,8 @@
     </main>
 
     <!-- HUD Stats Footer -->
-    <footer class="fixed bottom-0 inset-x-0 bg-onyx border-t border-cyber-cyan/30 py-4 px-8 flex justify-between items-center z-50">
+    <footer
+        class="fixed bottom-0 inset-x-0 bg-onyx border-t border-cyber-cyan/30 py-4 px-8 flex justify-between items-center z-50">
         <div class="flex gap-12">
             <div class="flex items-center gap-3">
                 <div class="w-2 h-2 bg-cyber-cyan animate-pulse"></div>
@@ -333,7 +428,7 @@
             };
             const targetLabel = labelMap[page];
             let clicked = false;
-            
+
             if (targetLabel) {
                 try {
                     const parentDoc = window.parent.document;
@@ -375,8 +470,9 @@
             const timeEl = document.getElementById('time-display');
             const now = new Date();
             const timeStr = `T_STAMP: ${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:${now.getUTCSeconds().toString().padStart(2, '0')}_UTC`;
-            if(timeEl) timeEl.textContent = timeStr;
+            if (timeEl) timeEl.textContent = timeStr;
         }, 1000);
     </script>
 </body>
+
 </html>

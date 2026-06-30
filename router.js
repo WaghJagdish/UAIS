@@ -57,26 +57,31 @@ function navigateTo(page) {
 
 // Load and render view
 async function loadView(page) {
+    // Clear all active intervals and timeouts from previous page scripts to prevent leakage
+    for (let i = 1; i < 9999; i++) {
+        window.clearInterval(i);
+        window.clearTimeout(i);
+    }
+
     const contentArea = document.getElementById('app-content');
     const sidebar = document.getElementById('app-sidebar');
     
     // 1. Sidebar visibility
     if (page === 'home') {
-        sidebar.classList.add('hidden');
-        document.getElementById('nav-home').className = "text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
+        sidebar.className = "hidden";
+        document.getElementById('nav-home').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
     } else {
-        sidebar.classList.remove('hidden');
-        sidebar.classList.add('flex');
-        document.getElementById('nav-home').className = "text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
+        sidebar.className = "hidden lg:flex lg:w-64 border-r border-cyber-purple/20 bg-surface-dark/90 backdrop-blur-md p-6 flex-col justify-between shrink-0";
+        document.getElementById('nav-home').className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
     }
 
     // Update navigation active states
     // Header navigations
     const navSimulations = document.getElementById('nav-simulations');
     if (page !== 'home') {
-        navSimulations.className = "text-[10px] font-headline tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
+        navSimulations.className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-cyber-cyan glow-text-cyan border-b-2 border-cyber-cyan pb-1";
     } else {
-        navSimulations.className = "text-[10px] font-headline tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
+        navSimulations.className = "text-[9px] sm:text-[10px] font-headline tracking-[0.2em] sm:tracking-[0.3em] text-on-surface/50 hover:text-cyber-purple transition-colors pb-1";
     }
 
     // Sidebar active options
@@ -93,7 +98,7 @@ async function loadView(page) {
 
     // 2. Fetch and render view content
     try {
-        const response = await fetch(PAGES[page]);
+        const response = await fetch(`${PAGES[page]}?t=${Date.now()}`);
         if (!response.ok) {
             throw new Error(`Failed to load view file: ${PAGES[page]}`);
         }
@@ -137,7 +142,8 @@ const loadedScripts = {};
 function loadModuleScript(page) {
     if (page === 'home') return; // Home has no dedicated script logic other than template
 
-    const scriptPath = `modules/${page}.js`;
+    // Add cache-busting parameter to force the browser to re-execute the module on every navigation re-entry
+    const scriptPath = `modules/${page}.js?t=${Date.now()}`;
     
     // Remove previous script to allow fresh execution on page re-entry
     const existing = document.getElementById(`module-script-${page}`);
